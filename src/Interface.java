@@ -1,5 +1,13 @@
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
 import javax.swing.JFrame;
 import java.awt.BorderLayout;
 import javax.swing.JToolBar;
@@ -104,5 +112,49 @@ public class Interface {
 		statusBar.setVerticalAlignment(SwingConstants.BOTTOM);
 		statusBar.setPreferredSize(new Dimension(100, 25));
 		frame.getContentPane().add(statusBar, BorderLayout.SOUTH);
+		
+		// FUNCOES
+		btnCopiar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String sText1 = mainTextEditor.getSelectedText();
+				String sText2 = msgArea.getSelectedText();
+				if (sText1 != null) {
+					copyToClipboard(sText1);
+				} else if (sText2 != null) {
+					copyToClipboard(sText2);
+				}
+		    }
+		});
+		
+		btnColar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mainTextEditor.insert(
+						getTextClipboard(), 
+						mainTextEditor.getCaretPosition()
+						);
+			}
+		});
+	}
+
+	private static void copyToClipboard(String text) {
+		if (text == null || text.isBlank()) {return;};
+		StringSelection selection = new StringSelection(text);
+		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		clipboard.setContents(selection, selection);			
+	}
+	
+	private static String getTextClipboard() {
+		Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
+		DataFlavor flavor = DataFlavor.stringFlavor;
+		if (c.isDataFlavorAvailable(flavor)) {
+			try {
+				return (String) c.getData(flavor);
+			} catch (UnsupportedFlavorException ufe) {
+				System.out.println(ufe);
+			} catch (IOException ioe) {
+				System.out.println(ioe);
+			}
+		}
+		return null;
 	}
 }
