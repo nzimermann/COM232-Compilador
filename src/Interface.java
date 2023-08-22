@@ -17,8 +17,11 @@ import java.io.OutputStreamWriter;
 import javax.swing.JFrame;
 import java.awt.BorderLayout;
 import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
 import javax.swing.JScrollPane;
+import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
@@ -67,7 +70,7 @@ public class Interface {
 		// BARRA DE FERRAMENTAS
 		JToolBar barraFerramentas = new JToolBar();
 		frame.getContentPane().add(barraFerramentas, BorderLayout.NORTH);
-		barraFerramentas.setPreferredSize(new Dimension(900, 70));
+		barraFerramentas.setPreferredSize(new Dimension(110, 70));
 		JFileChooser fileChooser = new JFileChooser();
 
 		// BOTOES
@@ -117,12 +120,12 @@ public class Interface {
 		scrollPane2.setViewportView(msgArea);
 
 		// BARRA DE STATUS
-		JLabel statusBar = new JLabel("C:\\caminho\\arquivo.txt");
+		JLabel statusBar = new JLabel();
 		statusBar.setVerticalAlignment(SwingConstants.BOTTOM);
 		statusBar.setPreferredSize(new Dimension(900, 25));
 		frame.getContentPane().add(statusBar, BorderLayout.SOUTH);
 
-		// FUNCOES
+		// FUNCOES NOVO
 		btnNovo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mainTextEditor.setText(null);
@@ -131,13 +134,23 @@ public class Interface {
 			}
 		});
 
+		msgArea.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("control N"), "Novo");
+		msgArea.getActionMap().put("Novo", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				mainTextEditor.setText(null);
+				msgArea.setText(null);
+				statusBar.setText(null);
+			}
+		});
+
+		// FUNCOES ABRIR
 		btnAbrir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
 				int result = fileChooser.showOpenDialog(fileChooser.getParent());
 				if (result == JFileChooser.APPROVE_OPTION) {
 					File selectedFile = fileChooser.getSelectedFile();
-					if (selectedFile.getName().endsWith(".txt")) {
+					if (selectedFile.getName().toLowerCase().endsWith(".txt")) {
 						try {
 							BufferedReader input = new BufferedReader(
 									new InputStreamReader(new FileInputStream(selectedFile)));
@@ -152,6 +165,29 @@ public class Interface {
 			}
 		});
 
+		msgArea.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("control O"), "Abrir");
+		msgArea.getActionMap().put("Abrir", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+				int result = fileChooser.showOpenDialog(fileChooser.getParent());
+				if (result == JFileChooser.APPROVE_OPTION) {
+					File selectedFile = fileChooser.getSelectedFile();
+					if (selectedFile.getName().toLowerCase().endsWith(".txt")) {
+						try {
+							BufferedReader input = new BufferedReader(
+									new InputStreamReader(new FileInputStream(selectedFile)));
+							mainTextEditor.read(input, "Lendo");
+							msgArea.setText(null);
+							statusBar.setText(selectedFile.getAbsolutePath());
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+					}
+				}
+			}
+		});
+
+		// FUNCOES SALVAR
 		btnSalvar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
@@ -169,10 +205,53 @@ public class Interface {
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					}
+					if (file.getName().toLowerCase().endsWith(".txt")) {
+						try {
+							BufferedReader input = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+							mainTextEditor.read(input, "Lendo");
+							msgArea.setText(null);
+							statusBar.setText(file.getAbsolutePath());
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+					}
 				}
 			}
 		});
 
+		msgArea.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("control S"), "Salvar");
+		msgArea.getActionMap().put("Salvar", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+				int salvar = fileChooser.showSaveDialog(btnSalvar);
+				if (salvar == JFileChooser.APPROVE_OPTION) {
+					File file = fileChooser.getSelectedFile();
+					if (file == null) {
+						return;
+					}
+					if (!file.getName().toLowerCase().endsWith(".txt")) {
+						file = new File(file.getParentFile(), file.getName() + ".txt");
+					}
+					try {
+						mainTextEditor.write(new OutputStreamWriter(new FileOutputStream(file), "utf-8"));
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+					if (file.getName().toLowerCase().endsWith(".txt")) {
+						try {
+							BufferedReader input = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+							mainTextEditor.read(input, "Lendo");
+							msgArea.setText(null);
+							statusBar.setText(file.getAbsolutePath());
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+					}
+				}
+			}
+		});
+
+		// FUNCOES COPIAR
 		btnCopiar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String sText1 = mainTextEditor.getSelectedText();
@@ -185,12 +264,14 @@ public class Interface {
 			}
 		});
 
+		// FUNCOES COLAR
 		btnColar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mainTextEditor.insert(getTextClipboard(), mainTextEditor.getCaretPosition());
 			}
 		});
 
+		// FUNCOES RECORTAR
 		btnRecortar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String sText1 = mainTextEditor.getSelectedText();
@@ -204,19 +285,36 @@ public class Interface {
 			}
 		});
 
+		// FUNCOES COMPILAR
 		btnCompilar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				msgArea.setText("compilação de programas ainda não foi implementada");
 			}
 		});
 
+		msgArea.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("F7"), "Compilar");
+		msgArea.getActionMap().put("Compilar", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				msgArea.setText("compilação de programas ainda não foi implementada");
+			}
+		});
+
+		// FUNCOES EQUIPE
 		btnEquipe.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				msgArea.setText("Nicolas Zimmerman\nLuís Felipe de Castilho\nArthur dos Santos");
+				msgArea.setText("Nicolas Zimermann\nLuís Felipe de Castilho\nArthur Felipe Lueders");
+			}
+		});
+
+		msgArea.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("F1"), "Equipe");
+		msgArea.getActionMap().put("Equipe", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				msgArea.setText("Nicolas Zimermann\nLuís Felipe de Castilho\nArthur Felipe Lueders");
 			}
 		});
 	}
 
+	// METODOS EXTRAS
 	private static void copyToClipboard(String text) {
 		if (text == null || text.isBlank()) {
 			return;
