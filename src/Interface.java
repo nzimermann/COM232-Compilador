@@ -14,6 +14,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.StringReader;
+import java.lang.reflect.Field;
+
 import javax.swing.JFrame;
 import java.awt.BorderLayout;
 import javax.swing.JToolBar;
@@ -25,6 +29,7 @@ import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
+import javax.swing.border.EtchedBorder;
 import javax.swing.JTextArea;
 import javax.swing.JLabel;
 
@@ -190,18 +195,6 @@ public class Interface {
 		// FUNCOES SALVAR
 		btnSalvar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (statusBar.getText() != null) {
-					File saveFile = new File(statusBar.getText());
-					if (saveFile.exists()) {
-						try {
-							mainTextEditor.write(
-									new OutputStreamWriter(new FileOutputStream(saveFile.getAbsolutePath()), "utf-8"));
-							return;
-						} catch (Exception ex) {
-							ex.printStackTrace();
-						}
-					}
-				}
 				fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
 				int salvar = fileChooser.showSaveDialog(btnSalvar);
 				if (salvar == JFileChooser.APPROVE_OPTION) {
@@ -234,18 +227,6 @@ public class Interface {
 		msgArea.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("control S"), "Salvar");
 		msgArea.getActionMap().put("Salvar", new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				if (statusBar.getText() != null) {
-					File saveFile = new File(statusBar.getText());
-					if (saveFile.exists()) {
-						try {
-							mainTextEditor.write(
-									new OutputStreamWriter(new FileOutputStream(saveFile.getAbsolutePath()), "utf-8"));
-							return;
-						} catch (Exception ex) {
-							ex.printStackTrace();
-						}
-					}
-				}
 				fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
 				int salvar = fileChooser.showSaveDialog(btnSalvar);
 				if (salvar == JFileChooser.APPROVE_OPTION) {
@@ -305,21 +286,53 @@ public class Interface {
 				} else if (sText2 != null) {
 					copyToClipboard(sText2);
 				}
-				mainTextEditor.replaceSelection("");
+				mainTextEditor.setText(null);
 			}
 		});
 
 		// FUNCOES COMPILAR
 		btnCompilar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				msgArea.setText("compilação de programas ainda não foi implementada");
+				Reader read = new StringReader(mainTextEditor.getText());
+				Lexico lexico = new Lexico();
+				lexico.setInput(read);
+				try {
+					Field fld[] = Constants.class.getDeclaredFields();
+					Token t = null;
+					String str = "linha     classe     lexema\n";
+					while ((t = lexico.nextToken()) != null) {
+						str += getLineNumberForIndex(mainTextEditor.getText(), t.getPosition()) + "     ";
+						str += fld[t.getId()].getName() + "     ";
+						str += t.getLexeme() + "\n";
+						msgArea.setText(str);
+					}
+				} catch (LexicalError er) {
+					msgArea.setText("linha: " + getLineNumberForIndex(mainTextEditor.getText(), er.getPosition()) + " "
+							+ mainTextEditor.getText().charAt(er.getPosition()) + " " + er.getMessage());
+				}
 			}
 		});
 
 		msgArea.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("F7"), "Compilar");
 		msgArea.getActionMap().put("Compilar", new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				msgArea.setText("compilação de programas ainda não foi implementada");
+				Reader read = new StringReader(mainTextEditor.getText());
+				Lexico lexico = new Lexico();
+				lexico.setInput(read);
+				try {
+					Field fld[] = Constants.class.getDeclaredFields();
+					Token t = null;
+					String str = "linha     classe     lexema\n";
+					while ((t = lexico.nextToken()) != null) {
+						str += getLineNumberForIndex(mainTextEditor.getText(), t.getPosition()) + "     ";
+						str += fld[t.getId()].getName() + "     ";
+						str += t.getLexeme() + "\n";
+						msgArea.setText(str);
+					}
+				} catch (LexicalError er) {
+					msgArea.setText("linha: " + getLineNumberForIndex(mainTextEditor.getText(), er.getPosition()) + " "
+							+ mainTextEditor.getText().charAt(er.getPosition()) + " " + er.getMessage());
+				}
 			}
 		});
 
@@ -362,5 +375,16 @@ public class Interface {
 			}
 		}
 		return null;
+	}
+
+	public static int getLineNumberForIndex(String strSource, int iIndex) {
+		int iLineCount = 1;
+		for (int i = 0; i <= iIndex && i < strSource.length(); i++) {
+			char c = strSource.charAt(i);
+			if (c == '\n') {
+				iLineCount++;
+			}
+		}
+		return iLineCount;
 	}
 }
