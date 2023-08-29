@@ -17,6 +17,8 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Field;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JFrame;
 import java.awt.BorderLayout;
@@ -298,16 +300,24 @@ public class Interface {
 				lexico.setInput(read);
 				try {
 					Field fld[] = Constants.class.getDeclaredFields();
+					Pattern pattern = Pattern.compile("TOKEN" + ".*");
+					Matcher matcher;
 					Token t = null;
 					String str = "linha     classe     lexema\n";
 					while ((t = lexico.nextToken()) != null) {
+						matcher = pattern.matcher(fld[t.getId()].getName());
 						str += getLineNumberForIndex(mainTextEditor.getText(), t.getPosition()) + "     ";
-						str += fld[t.getId()].getName() + "     ";
+						if (matcher.find() == true) {
+							str += "simbolo especial" + "     ";
+						} else {
+							str += fld[t.getId()].getName().substring(2) + "     ";
+						}
 						str += t.getLexeme() + "\n";
-						msgArea.setText(str);
 					}
+					str += "\nprograma compilado com sucesso";
+					msgArea.setText(str);
 				} catch (LexicalError er) {
-					msgArea.setText("linha: " + getLineNumberForIndex(mainTextEditor.getText(), er.getPosition()) + " "
+					msgArea.setText("linha " + getLineNumberForIndex(mainTextEditor.getText(), er.getPosition()) + ": "
 							+ mainTextEditor.getText().charAt(er.getPosition()) + " " + er.getMessage());
 				}
 			}
@@ -321,16 +331,24 @@ public class Interface {
 				lexico.setInput(read);
 				try {
 					Field fld[] = Constants.class.getDeclaredFields();
+					Pattern pattern = Pattern.compile("TOKEN" + ".*");
+					Matcher matcher;
 					Token t = null;
 					String str = "linha     classe     lexema\n";
 					while ((t = lexico.nextToken()) != null) {
+						matcher = pattern.matcher(fld[t.getId()].getName());
 						str += getLineNumberForIndex(mainTextEditor.getText(), t.getPosition()) + "     ";
-						str += fld[t.getId()].getName() + "     ";
+						if (matcher.find() == true) {
+							str += "simbolo especial" + "     ";
+						} else {
+							str += fld[t.getId()].getName().substring(2) + "     ";
+						}
 						str += t.getLexeme() + "\n";
-						msgArea.setText(str);
 					}
+					str += "\nprograma compilado com sucesso";
+					msgArea.setText(str);
 				} catch (LexicalError er) {
-					msgArea.setText("linha: " + getLineNumberForIndex(mainTextEditor.getText(), er.getPosition()) + " "
+					msgArea.setText("linha " + getLineNumberForIndex(mainTextEditor.getText(), er.getPosition()) + ": "
 							+ mainTextEditor.getText().charAt(er.getPosition()) + " " + er.getMessage());
 				}
 			}
