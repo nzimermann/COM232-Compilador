@@ -197,6 +197,18 @@ public class Interface {
 		// FUNCOES SALVAR
 		btnSalvar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if (statusBar.getText() != null) {
+					File saveFile = new File(statusBar.getText());
+					if (saveFile.exists()) {
+						try {
+							mainTextEditor.write(
+									new OutputStreamWriter(new FileOutputStream(saveFile.getAbsolutePath()), "utf-8"));
+							return;
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+					}
+				}
 				fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
 				int salvar = fileChooser.showSaveDialog(btnSalvar);
 				if (salvar == JFileChooser.APPROVE_OPTION) {
@@ -229,6 +241,18 @@ public class Interface {
 		msgArea.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("control S"), "Salvar");
 		msgArea.getActionMap().put("Salvar", new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
+				if (statusBar.getText() != null) {
+					File saveFile = new File(statusBar.getText());
+					if (saveFile.exists()) {
+						try {
+							mainTextEditor.write(
+									new OutputStreamWriter(new FileOutputStream(saveFile.getAbsolutePath()), "utf-8"));
+							return;
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+					}
+				}
 				fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
 				int salvar = fileChooser.showSaveDialog(btnSalvar);
 				if (salvar == JFileChooser.APPROVE_OPTION) {
