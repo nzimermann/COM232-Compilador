@@ -434,6 +434,7 @@ public class Interface {
 									"linha " + getLineNumberForIndex(mainTextEditor.getText(), er.getPosition()) + ": "
 											+ mainTextEditor.getText().substring(er.getPosition(),
 													mainTextEditor.getText().indexOf(" "))
+											+ " "
 											+ er.getMessage());
 						} else if (temEnter && mainTextEditor.getText()
 								.contains(mainTextEditor.getText().substring(er.getPosition(),
@@ -442,17 +443,18 @@ public class Interface {
 									"linha " + getLineNumberForIndex(mainTextEditor.getText(), er.getPosition()) + ": "
 											+ mainTextEditor.getText().substring(er.getPosition(),
 													mainTextEditor.getText().indexOf('\n'))
+											+ " "
 											+ er.getMessage());
 						} else {
 							msgArea.setText(
 									"linha " + getLineNumberForIndex(mainTextEditor.getText(), er.getPosition()) + ": "
-											+ mainTextEditor.getText()
+											+ mainTextEditor.getText() + " "
 											+ er.getMessage());
 						}
 					} else if (er.getMessage().contains("simbolo")) {
 						msgArea.setText(
 								"linha " + getLineNumberForIndex(mainTextEditor.getText(), er.getPosition()) + ": "
-										+ mainTextEditor.getText() + er.getMessage());
+										+ mainTextEditor.getText().charAt(er.getPosition()) + " " + er.getMessage());
 					} else {
 						msgArea.setText(
 								"linha " + getLineNumberForIndex(mainTextEditor.getText(), er.getPosition()) + ": "
