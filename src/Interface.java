@@ -19,7 +19,6 @@ import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.swing.JFrame;
 import java.awt.BorderLayout;
 import javax.swing.JToolBar;
@@ -31,7 +30,6 @@ import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
-import javax.swing.border.EtchedBorder;
 import javax.swing.JTextArea;
 import javax.swing.JLabel;
 
@@ -329,20 +327,64 @@ public class Interface {
 					Token t = null;
 					String str = "linha     classe     lexema\n";
 					while ((t = lexico.nextToken()) != null) {
+						if (t.getId() == 2) {
+							str = "linha " + getLineNumberForIndex(mainTextEditor.getText(), t.getPosition())
+									+ ": " + t.getLexeme() + " palavra reservada invalida";
+							msgArea.setText(str);
+							break;
+						}
 						matcher = pattern.matcher(fld[t.getId()].getName());
-						str += getLineNumberForIndex(mainTextEditor.getText(), t.getPosition()) + "     ";
+						str += getLineNumberForIndex(mainTextEditor.getText(), t.getPosition()) + "\t";
 						if (matcher.find() == true) {
-							str += "simbolo especial" + "     ";
+							str += "simbolo especial\t";
+						} else if (t.getId() > 6 && t.getId() < 18) {
+							str += "palavra_reservada\t";
 						} else {
-							str += fld[t.getId()].getName().substring(2) + "     ";
+							str += fld[t.getId()].getName().substring(2) + "\t";
 						}
 						str += t.getLexeme() + "\n";
 					}
-					str += "\nprograma compilado com sucesso";
+					if (!str.contains("invalido") && !str.contains("invalida")) {
+						str += "\nprograma compilado com sucesso";
+					}
 					msgArea.setText(str);
 				} catch (LexicalError er) {
-					msgArea.setText("linha " + getLineNumberForIndex(mainTextEditor.getText(), er.getPosition()) + ": "
-							+ mainTextEditor.getText().charAt(er.getPosition()) + " " + er.getMessage());
+					boolean temEspaco = mainTextEditor.getText().contains(" ");
+					boolean temEnter = mainTextEditor.getText().contains("\n");
+					if (er.getMessage().contains("identificador")) {
+						if (temEspaco && mainTextEditor.getText()
+								.contains(mainTextEditor.getText().substring(er.getPosition(),
+										mainTextEditor.getText().indexOf(" "))) == true) {
+							msgArea.setText(
+									"linha " + getLineNumberForIndex(mainTextEditor.getText(), er.getPosition()) + ": "
+											+ mainTextEditor.getText().substring(er.getPosition(),
+													mainTextEditor.getText().indexOf(" "))
+											+ " "
+											+ er.getMessage());
+						} else if (temEnter && mainTextEditor.getText()
+								.contains(mainTextEditor.getText().substring(er.getPosition(),
+										mainTextEditor.getText().indexOf('\n'))) == true) {
+							msgArea.setText(
+									"linha " + getLineNumberForIndex(mainTextEditor.getText(), er.getPosition()) + ": "
+											+ mainTextEditor.getText().substring(er.getPosition(),
+													mainTextEditor.getText().indexOf('\n'))
+											+ " "
+											+ er.getMessage());
+						} else {
+							msgArea.setText(
+									"linha " + getLineNumberForIndex(mainTextEditor.getText(), er.getPosition()) + ": "
+											+ mainTextEditor.getText() + " "
+											+ er.getMessage());
+						}
+					} else if (er.getMessage().contains("simbolo")) {
+						msgArea.setText(
+								"linha " + getLineNumberForIndex(mainTextEditor.getText(), er.getPosition()) + ": "
+										+ mainTextEditor.getText().charAt(er.getPosition()) + " " + er.getMessage());
+					} else {
+						msgArea.setText(
+								"linha " + getLineNumberForIndex(mainTextEditor.getText(), er.getPosition()) + ": "
+										+ er.getMessage());
+					}
 				}
 			}
 		});
@@ -360,20 +402,62 @@ public class Interface {
 					Token t = null;
 					String str = "linha     classe     lexema\n";
 					while ((t = lexico.nextToken()) != null) {
+						if (t.getId() == 2) {
+							str = "linha " + getLineNumberForIndex(mainTextEditor.getText(), t.getPosition())
+									+ ": " + t.getLexeme() + " palavra reservada invalida";
+							msgArea.setText(str);
+							break;
+						}
 						matcher = pattern.matcher(fld[t.getId()].getName());
-						str += getLineNumberForIndex(mainTextEditor.getText(), t.getPosition()) + "     ";
+						str += getLineNumberForIndex(mainTextEditor.getText(), t.getPosition()) + "\t";
 						if (matcher.find() == true) {
-							str += "simbolo especial" + "     ";
+							str += "simbolo especial\t";
+						} else if (t.getId() > 6 && t.getId() < 18) {
+							str += "palavra_reservada\t";
 						} else {
-							str += fld[t.getId()].getName().substring(2) + "     ";
+							str += fld[t.getId()].getName().substring(2) + "\t";
 						}
 						str += t.getLexeme() + "\n";
 					}
-					str += "\nprograma compilado com sucesso";
+					if (!str.contains("invalido") && !str.contains("invalida")) {
+						str += "\nprograma compilado com sucesso";
+					}
 					msgArea.setText(str);
 				} catch (LexicalError er) {
-					msgArea.setText("linha " + getLineNumberForIndex(mainTextEditor.getText(), er.getPosition()) + ": "
-							+ mainTextEditor.getText().charAt(er.getPosition()) + " " + er.getMessage());
+					boolean temEspaco = mainTextEditor.getText().contains(" ");
+					boolean temEnter = mainTextEditor.getText().contains("\n");
+					if (er.getMessage().contains("identificador")) {
+						if (temEspaco && mainTextEditor.getText()
+								.contains(mainTextEditor.getText().substring(er.getPosition(),
+										mainTextEditor.getText().indexOf(" "))) == true) {
+							msgArea.setText(
+									"linha " + getLineNumberForIndex(mainTextEditor.getText(), er.getPosition()) + ": "
+											+ mainTextEditor.getText().substring(er.getPosition(),
+													mainTextEditor.getText().indexOf(" "))
+											+ er.getMessage());
+						} else if (temEnter && mainTextEditor.getText()
+								.contains(mainTextEditor.getText().substring(er.getPosition(),
+										mainTextEditor.getText().indexOf('\n'))) == true) {
+							msgArea.setText(
+									"linha " + getLineNumberForIndex(mainTextEditor.getText(), er.getPosition()) + ": "
+											+ mainTextEditor.getText().substring(er.getPosition(),
+													mainTextEditor.getText().indexOf('\n'))
+											+ er.getMessage());
+						} else {
+							msgArea.setText(
+									"linha " + getLineNumberForIndex(mainTextEditor.getText(), er.getPosition()) + ": "
+											+ mainTextEditor.getText()
+											+ er.getMessage());
+						}
+					} else if (er.getMessage().contains("simbolo")) {
+						msgArea.setText(
+								"linha " + getLineNumberForIndex(mainTextEditor.getText(), er.getPosition()) + ": "
+										+ mainTextEditor.getText() + er.getMessage());
+					} else {
+						msgArea.setText(
+								"linha " + getLineNumberForIndex(mainTextEditor.getText(), er.getPosition()) + ": "
+										+ er.getMessage());
+					}
 				}
 			}
 		});
