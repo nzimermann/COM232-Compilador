@@ -25,7 +25,9 @@ import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.JScrollPane;
 import javax.swing.AbstractAction;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JSplitPane;
@@ -64,6 +66,7 @@ public class Interface {
 	/**
 	 * Initialize the contents of the frame.
 	 */
+	@SuppressWarnings("serial")
 	private void initialize() {
 		frame = new JFrame();
 		frame.setTitle("Compilador Maluco");
@@ -79,14 +82,14 @@ public class Interface {
 		JFileChooser fileChooser = new JFileChooser();
 
 		// BOTOES
-		ToolBarButton btnNovo = new ToolBarButton("Novo [ctrl-n]", new ImageIcon("./img/new_file.png"));
-		ToolBarButton btnAbrir = new ToolBarButton("Abrir [ctrl-o]", new ImageIcon("./img/open_file.png"));
-		ToolBarButton btnSalvar = new ToolBarButton("Salvar [ctrl-s]", new ImageIcon("./img/save_file.png"));
-		ToolBarButton btnCopiar = new ToolBarButton("Copiar [ctrl-c]", new ImageIcon("./img/copy_file.png"));
-		ToolBarButton btnColar = new ToolBarButton("Colar [ctrl-v]", new ImageIcon("./img/paste_file.png"));
-		ToolBarButton btnRecortar = new ToolBarButton("Recortar [ctrl-x]", new ImageIcon("./img/cut_file.png"));
-		ToolBarButton btnCompilar = new ToolBarButton("Compilar [F7]", new ImageIcon("./img/compile.png"));
-		ToolBarButton btnEquipe = new ToolBarButton("Equipe [F1]", new ImageIcon("./img/help.png"));
+		JButton btnNovo = toolBarButton("Novo [ctrl-n]", new ImageIcon("./img/new_file.png"));
+		JButton btnAbrir = toolBarButton("Abrir [ctrl-o]", new ImageIcon("./img/open_file.png"));
+		JButton btnSalvar = toolBarButton("Salvar [ctrl-s]", new ImageIcon("./img/save_file.png"));
+		JButton btnCopiar = toolBarButton("Copiar [ctrl-c]", new ImageIcon("./img/copy_file.png"));
+		JButton btnColar = toolBarButton("Colar [ctrl-v]", new ImageIcon("./img/paste_file.png"));
+		JButton btnRecortar = toolBarButton("Recortar [ctrl-x]", new ImageIcon("./img/cut_file.png"));
+		JButton btnCompilar = toolBarButton("Compilar [F7]", new ImageIcon("./img/compile.png"));
+		JButton btnEquipe = toolBarButton("Equipe [F1]", new ImageIcon("./img/help.png"));
 
 		barraFerramentas.add(btnNovo);
 		barraFerramentas.add(btnAbrir);
@@ -503,6 +506,17 @@ public class Interface {
 			}
 		}
 		return null;
+	}
+	
+	private static JButton toolBarButton(String text, Icon icon) {
+		JButton b = new JButton();
+		b.setText(text);
+		b.setIcon(icon);
+		b.setMaximumSize(new Dimension(106, 70));
+		b.setFocusable(false);
+		b.setHorizontalTextPosition(JButton.CENTER);
+		b.setVerticalTextPosition(JButton.BOTTOM);
+		return b;
 	}
 
 	public static int getLineNumberForIndex(String strSource, int iIndex) {
