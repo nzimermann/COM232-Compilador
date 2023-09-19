@@ -1,0 +1,133 @@
+#Options
+GenerateScanner = true
+GenerateParser = true
+Language = Java
+ScannerName = Lexico
+ParserName = Sintatico
+SemanticName = Semantico
+ScannerCaseSensitive = true
+ScannerTable = Compact
+Input = Stream
+Parser = SLR
+#RegularDefinitions
+inteiro: [0-9] | [1-9][0-9]+
+letras: i | f | s | b
+#Tokens
+//Luis F. de Castilho, Arthur Felipe Lueders e Nicolas Zimermann
+
+palavra_reservada: [a-z]+
+
+identificador: _{letras} ( ( [a-z] [a-z0-9]* ( [A-Z] [a-z0-9]+ )* [A-Z]? ) | ( [A-Z] ( [a-z0-9] [A-Z]? )* ) )
+
+constantei: {inteiro}
+
+constantef: {inteiro} "." [0-9] ( [0-9]* [1-9] )?
+
+constantes: \" ( [^\n \" "\" %] | % {letras} )* \"
+
+: # [^\n]*
+
+: "[" [^ "[" "]" ]* "]"
+
+:[\s\t\n]
+
+// palavras reservadas
+//do else false fun if in main out repeat true while
+do   = palavra_reservada: "do"
+else = palavra_reservada: "else"
+false = palavra_reservada: "false"
+fun = palavra_reservada: "fun"
+if = palavra_reservada: "if"
+in = palavra_reservada: "in"
+main = palavra_reservada: "main"
+out = palavra_reservada: "out"
+repeat = palavra_reservada: "repeat"
+true = palavra_reservada: "true"
+while = palavra_reservada: "while"
+
+//simbolos especiais
+// & | ! , ; = : ( ) { } == != < > + - * /
+"&"
+"|"
+"!"
+","
+";"
+"="
+":"
+"("
+")"
+"{"
+"}"
+"=="
+"!="
+"<"
+">"
+"+"
+"-"
+"*"
+"/"
+#NonTerminals
+<programa>
+
+<listadeinstrucoes>
+<instrucao>
+<declaracaodeconstante>
+<declaracaodevariaveis>
+<comando>
+<listadeidentificadores>
+<valor>
+<atribuicao>
+<entradadedados>
+<saidadedados>
+<selecao>
+<repeticao>
+<expressao>
+<listadeentrada>
+<parametroentrada>
+<listadeexpressoes>
+<listadecomandos>
+#Grammar
+<programa> ::= fun main "{" <listadeinstrucoes> "}" ;
+
+<listadeinstrucoes> ::= <instrucao> | <instrucao> ";" <listadeinstrucoes> ;
+
+<instrucao> ::= <declaracaodeconstante> | <declaracaodevariaveis> | <comando> ;
+
+<declaracaodeconstante> ::= <listadeidentificadores> ":" <valor> ;
+
+<listadeidentificadores> ::= identificador | identificador "," <listadeidentificadores> ;
+
+<valor> ::= constantei | constantef | constantes | true | false ;
+
+<declaracaodevariaveis> ::= <listadeidentificadores> ;
+
+<comando> ::= <atribuicao> | <entradadedados> | <saidadedados> | <selecao> | <repeticao> ;
+
+
+
+<atribuicao> ::= <listadeidentificadores> "=" <expressao> ;
+
+
+
+<entradadedados> ::= in "(" <listadeentrada> ")" ;
+
+<parametroentrada> ::= constantes "," <listadeidentificadores> | <listadeidentificadores> ;
+
+<listadeentrada> ::= <parametroentrada> | <parametroentrada> ";" <listadeentrada> ;
+
+
+
+<saidadedados> ::= out "(" <listadeexpressoes> ")" ;
+
+<listadeexpressoes> ::= <expressao> | <expressao> "," <listadeexpressoes> ;
+
+
+
+<selecao> ::= if "(" <expressao> ")" "{" <listadecomandos> "}" 
+		| if "(" <expressao> ")" "{" <listadecomandos> "}" else "{" <listadecomandos> "}" ; 
+
+
+<listadecomandos> ::= <comando> | <comando> <listadecomandos> ;
+
+<repeticao> ::= while "(" <expressao> ")" do "{" <listadecomandos> "}"
+		| repeat "{" <listadecomandos> "}" while "(" <expressao> ")" ;
