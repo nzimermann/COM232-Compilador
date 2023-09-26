@@ -7,8 +7,8 @@ ParserName = Sintatico
 SemanticName = Semantico
 ScannerCaseSensitive = true
 ScannerTable = Compact
-Input = Stream
-Parser = SLR
+Input = String
+Parser = LL
 #RegularDefinitions
 inteiro: [0-9] | [1-9][0-9]+
 letras: i | f | s | b
@@ -70,64 +70,136 @@ while = palavra_reservada: "while"
 <programa>
 
 <listadeinstrucoes>
+<listadeinstrucoes1>
 <instrucao>
-<declaracaodeconstante>
-<declaracaodevariaveis>
+<instrucao1>
+//<declaracaodeconstante>
+//<declaracaodevariaveis>
 <comando>
 <listadeidentificadores>
+<listadeidentificadores1>
 <valor>
 <atribuicao>
 <entradadedados>
 <saidadedados>
 <selecao>
+<selecao1>
 <repeticao>
-<expressao>
 <listadeentrada>
+<listadeentrada1>
 <parametroentrada>
 <listadeexpressoes>
+<listadeexpressoes1>
 <listadecomandos>
+<listadecomandos1>
+
+<expressao>
+<expressao_>
+<elemento>
+<relacional>
+<relacional_>
+<operador_relacional>
+<aritmetica>
+<aritmetica_>
+<termo>
+<termo_>
+<fator>
 #Grammar
-<programa> ::= fun main "{" <listadeinstrucoes> "}" ;
+<programa> ::= fun main "{" <listadeinstrucoes> "}" ; // ok
 
-<listadeinstrucoes> ::= <instrucao> | <instrucao> ";" <listadeinstrucoes> ;
+<listadeinstrucoes> ::= <instrucao> ";" <listadeinstrucoes1>; // ok
 
-<instrucao> ::= <declaracaodeconstante> | <declaracaodevariaveis> | <comando> ;
+<listadeinstrucoes1> ::= î | <listadeinstrucoes> ; // ok
 
-<declaracaodeconstante> ::= <listadeidentificadores> ":" <valor> ;
+<instrucao> ::= <listadeidentificadores> <instrucao1> | <entradadedados> | <saidadedados> | <selecao> | <repeticao> ; // ok
 
-<listadeidentificadores> ::= identificador | identificador "," <listadeidentificadores> ;
+<instrucao1> ::= î | ":" <valor> | "=" <expressao> ; // ok
 
-<valor> ::= constantei | constantef | constantes | true | false ;
+//^^^^^^^^^^^^^^^^
+//<instrucao> = A
+//<declaracaodeconstante> = B
+//<declaracaodevariaveis> = C
+//<comando> = D
+//<listadeidentificadores> = L
+//<atribuicao> = V1
+//<entradadedados> = V2
+//<saidadedados> = V3
+//<selecao> = V4
+//<repeticao> = V5
 
-<declaracaodevariaveis> ::= <listadeidentificadores> ;
+//A -> B|C|D
+//B -> L : valor
+//C -> L
+//D -> V1 | V2 | V3 | V4 | V5
+//V1 -> L = exp
 
-<comando> ::= <atribuicao> | <entradadedados> | <saidadedados> | <selecao> | <repeticao> ;
+//A -> L : valor | L = exp | L | V2 | V3 | V4 | V5
 
+//A -> L A1 | V2 | V3 | V4 | V5
+//A1 -> : valor | = exp | î
 
+<listadeidentificadores> ::= identificador <listadeidentificadores1>; // ok
 
-<atribuicao> ::= <listadeidentificadores> "=" <expressao> ;
+<listadeidentificadores1> ::= î | "," <listadeidentificadores> ; // ok
 
+<valor> ::= constantei | constantef | constantes | true | false ; // ok
 
+<comando> ::= <atribuicao> | <entradadedados> | <saidadedados> | <selecao> | <repeticao> ; // ok
 
-<entradadedados> ::= in "(" <listadeentrada> ")" ;
+<atribuicao> ::= <listadeidentificadores> "=" <expressao> ; // ok
 
-<parametroentrada> ::= constantes "," <listadeidentificadores> | <listadeidentificadores> ;
+<entradadedados> ::= in "(" <listadeentrada> ")" ; // ok
 
-<listadeentrada> ::= <parametroentrada> | <parametroentrada> ";" <listadeentrada> ;
+<parametroentrada> ::= constantes "," <listadeidentificadores> | <listadeidentificadores> ; // ok
 
+<listadeentrada> ::= <parametroentrada> <listadeentrada1> ; // ok
 
+<listadeentrada1> ::= î | ";" <listadeentrada> ; // ok
 
-<saidadedados> ::= out "(" <listadeexpressoes> ")" ;
+<saidadedados> ::= out "(" <listadeexpressoes> ")" ; // ok
 
-<listadeexpressoes> ::= <expressao> | <expressao> "," <listadeexpressoes> ;
+<listadeexpressoes> ::= <expressao> <listadeexpressoes1> ; // ok
 
+<listadeexpressoes1> ::= î |  "," <listadeexpressoes> ; // ok
 
+<selecao> ::= if "(" <expressao> ")" "{" <listadecomandos> "}" <selecao1> ; // ok
 
-<selecao> ::= if "(" <expressao> ")" "{" <listadecomandos> "}" 
-		| if "(" <expressao> ")" "{" <listadecomandos> "}" else "{" <listadecomandos> "}" ; 
+<selecao1> ::= î | else "{" <listadecomandos> "}" ; // ok
 
+<listadecomandos> ::= <comando> ";" <listadecomandos1>; // ok
 
-<listadecomandos> ::= <comando> | <comando> <listadecomandos> ;
+<listadecomandos1> ::= î | <listadecomandos> ; // ok
 
 <repeticao> ::= while "(" <expressao> ")" do "{" <listadecomandos> "}"
-		| repeat "{" <listadecomandos> "}" while "(" <expressao> ")" ;
+		| repeat "{" <listadecomandos> "}" while "(" <expressao> ")" ; // ok
+
+// =========TRABALHO 3===========
+
+<expressao> ::= <elemento> <expressao_> ;
+
+<expressao_> ::= î | "&" <elemento> <expressao_> | "|" <elemento> <expressao_> ;
+
+<elemento> ::= <relacional> | true | false | "!" <elemento> ;
+
+<relacional> ::= <aritmetica> <relacional_> ;
+
+<relacional_> ::= î | <operador_relacional> <aritmetica> ;
+
+<operador_relacional> ::= "==" | "!=" | "<" | ">" ;
+
+<aritmetica> ::= <termo> <aritmetica_> ;
+
+<aritmetica_> ::= î | "+" <termo> <aritmetica_> | "-" <termo> <aritmetica_> ;
+
+<termo> ::= <fator> <termo_> ;
+<termo_> ::= î | "*" <fator> <termo_> | "/" <fator> <termo_> ;
+<fator> ::=	identificador |
+		constantei |
+		constantef |
+		constantes |
+		"(" <expressao> ")" |
+		"+" <fator> |
+		"-" <fator> ;
+
+
+
