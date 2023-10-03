@@ -320,6 +320,7 @@ public class Interface {
 		// FUNCOES COMPILAR
 		btnCompilar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				/*
 				Reader read = new StringReader(mainTextEditor.getText());
 				Lexico lexico = new Lexico();
 				lexico.setInput(read);
@@ -389,12 +390,29 @@ public class Interface {
 										+ er.getMessage());
 					}
 				}
+				*/
+				Lexico lexico = new Lexico();
+				Sintatico sintatico = new Sintatico();
+				Semantico semantico = new Semantico();
+
+				lexico.setInput(mainTextEditor.getText());
+
+				try {
+					sintatico.parse(lexico, semantico);
+				} catch (LexicalError lexicalError) {
+
+				} catch (SyntaticError syntaticError) {
+					msgArea.setText("linha " + getLineNumberForIndex(mainTextEditor.getText(), se.getPosition()) + "--" + "encontrado " + "esperado ");
+				} catch (SemanticError semanticError) {
+
+				}
 			}
 		});
 
 		msgArea.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("F7"), "Compilar");
 		msgArea.getActionMap().put("Compilar", new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
+				/*
 				Reader read = new StringReader(mainTextEditor.getText());
 				Lexico lexico = new Lexico();
 				lexico.setInput(read);
@@ -463,6 +481,22 @@ public class Interface {
 								"linha " + getLineNumberForIndex(mainTextEditor.getText(), er.getPosition()) + ": "
 										+ er.getMessage());
 					}
+				}
+				*/
+				Lexico lexico = new Lexico();
+				Sintatico sintatico = new Sintatico();
+				Semantico semantico = new Semantico();
+
+				lexico.setInput(mainTextEditor.getText());
+
+				try {
+					sintatico.parse(lexico, semantico);
+				} catch (LexicalError lexicalError) {
+					
+				} catch (SyntaticError syntaticError) {
+					msgArea.setText("linha " + getLineNumberForIndex(mainTextEditor.getText(), se.getPosition()) + "--" + "encontrado " + "esperado ");
+				} catch (SemanticError semanticError) {
+
 				}
 			}
 		});

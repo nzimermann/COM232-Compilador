@@ -73,8 +73,6 @@ while = palavra_reservada: "while"
 <listadeinstrucoes1>
 <instrucao>
 <instrucao1>
-//<declaracaodeconstante>
-//<declaracaodevariaveis>
 <comando>
 <listadeidentificadores>
 <listadeidentificadores1>
@@ -105,94 +103,70 @@ while = palavra_reservada: "while"
 <termo_>
 <fator>
 #Grammar
-<programa> ::= fun main "{" <listadeinstrucoes> "}" ; // ok
+<programa> ::= fun main "{" <listadeinstrucoes> "}" ;
 
-<listadeinstrucoes> ::= <instrucao> ";" <listadeinstrucoes1>; // ok
+<listadeinstrucoes> ::= <instrucao> ";" <listadeinstrucoes1>;
 
-<listadeinstrucoes1> ::= î | <listadeinstrucoes> ; // ok
+<listadeinstrucoes1> ::= ï¿½ | <listadeinstrucoes> ;
 
-<instrucao> ::= <listadeidentificadores> <instrucao1> | <entradadedados> | <saidadedados> | <selecao> | <repeticao> ; // ok
+<instrucao> ::= <listadeidentificadores> <instrucao1> | <entradadedados> | <saidadedados> | <selecao> | <repeticao> ;
 
-<instrucao1> ::= î | ":" <valor> | "=" <expressao> ; // ok
+<instrucao1> ::= ï¿½ | ":" <valor> | "=" <expressao> ;
 
-//^^^^^^^^^^^^^^^^
-//<instrucao> = A
-//<declaracaodeconstante> = B
-//<declaracaodevariaveis> = C
-//<comando> = D
-//<listadeidentificadores> = L
-//<atribuicao> = V1
-//<entradadedados> = V2
-//<saidadedados> = V3
-//<selecao> = V4
-//<repeticao> = V5
 
-//A -> B|C|D
-//B -> L : valor
-//C -> L
-//D -> V1 | V2 | V3 | V4 | V5
-//V1 -> L = exp
+<listadeidentificadores> ::= identificador <listadeidentificadores1>; 
 
-//A -> L : valor | L = exp | L | V2 | V3 | V4 | V5
+<listadeidentificadores1> ::= ï¿½ | "," <listadeidentificadores> ;
 
-//A -> L A1 | V2 | V3 | V4 | V5
-//A1 -> : valor | = exp | î
-
-<listadeidentificadores> ::= identificador <listadeidentificadores1>; // ok
-
-<listadeidentificadores1> ::= î | "," <listadeidentificadores> ; // ok
-
-<valor> ::= constantei | constantef | constantes | true | false ; // ok
+<valor> ::= constantei | constantef | constantes | true | false ;
 
 <comando> ::= <atribuicao> | <entradadedados> | <saidadedados> | <selecao> | <repeticao> ; // ok
 
-<atribuicao> ::= <listadeidentificadores> "=" <expressao> ; // ok
+<atribuicao> ::= <listadeidentificadores> "=" <expressao> ;
 
-<entradadedados> ::= in "(" <listadeentrada> ")" ; // ok
+<entradadedados> ::= in "(" <listadeentrada> ")" ; 
 
-<parametroentrada> ::= constantes "," <listadeidentificadores> | <listadeidentificadores> ; // ok
+<parametroentrada> ::= constantes "," <listadeidentificadores> | <listadeidentificadores> ;
 
-<listadeentrada> ::= <parametroentrada> <listadeentrada1> ; // ok
+<listadeentrada> ::= <parametroentrada> <listadeentrada1> ;
 
-<listadeentrada1> ::= î | ";" <listadeentrada> ; // ok
+<listadeentrada1> ::= ï¿½ | ";" <listadeentrada> ;
 
-<saidadedados> ::= out "(" <listadeexpressoes> ")" ; // ok
+<saidadedados> ::= out "(" <listadeexpressoes> ")" ;
 
-<listadeexpressoes> ::= <expressao> <listadeexpressoes1> ; // ok
+<listadeexpressoes> ::= <expressao> <listadeexpressoes1> ;
 
-<listadeexpressoes1> ::= î |  "," <listadeexpressoes> ; // ok
+<listadeexpressoes1> ::= ï¿½ |  "," <listadeexpressoes> ;
 
-<selecao> ::= if "(" <expressao> ")" "{" <listadecomandos> "}" <selecao1> ; // ok
+<selecao> ::= if "(" <expressao> ")" "{" <listadecomandos> "}" <selecao1> ;
 
-<selecao1> ::= î | else "{" <listadecomandos> "}" ; // ok
+<selecao1> ::= ï¿½ | else "{" <listadecomandos> "}" ;
 
-<listadecomandos> ::= <comando> ";" <listadecomandos1>; // ok
+<listadecomandos> ::= <comando> ";" <listadecomandos1>;
 
-<listadecomandos1> ::= î | <listadecomandos> ; // ok
+<listadecomandos1> ::= ï¿½ | <listadecomandos> ;
 
 <repeticao> ::= while "(" <expressao> ")" do "{" <listadecomandos> "}"
-		| repeat "{" <listadecomandos> "}" while "(" <expressao> ")" ; // ok
-
-// =========TRABALHO 3===========
+		| repeat "{" <listadecomandos> "}" while "(" <expressao> ")" ;
 
 <expressao> ::= <elemento> <expressao_> ;
 
-<expressao_> ::= î | "&" <elemento> <expressao_> | "|" <elemento> <expressao_> ;
+<expressao_> ::= ï¿½ | "&" <elemento> <expressao_> | "|" <elemento> <expressao_> ;
 
 <elemento> ::= <relacional> | true | false | "!" <elemento> ;
 
 <relacional> ::= <aritmetica> <relacional_> ;
 
-<relacional_> ::= î | <operador_relacional> <aritmetica> ;
+<relacional_> ::= ï¿½ | <operador_relacional> <aritmetica> ;
 
 <operador_relacional> ::= "==" | "!=" | "<" | ">" ;
 
 <aritmetica> ::= <termo> <aritmetica_> ;
 
-<aritmetica_> ::= î | "+" <termo> <aritmetica_> | "-" <termo> <aritmetica_> ;
+<aritmetica_> ::= ï¿½ | "+" <termo> <aritmetica_> | "-" <termo> <aritmetica_> ;
 
 <termo> ::= <fator> <termo_> ;
-<termo_> ::= î | "*" <fator> <termo_> | "/" <fator> <termo_> ;
+<termo_> ::= ï¿½ | "*" <fator> <termo_> | "/" <fator> <termo_> ;
 <fator> ::=	identificador |
 		constantei |
 		constantef |
