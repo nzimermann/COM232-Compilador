@@ -13,11 +13,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-// import java.io.Reader;
-// import java.io.StringReader;
-// import java.lang.reflect.Field;
-// import java.util.regex.Matcher;
-// import java.util.regex.Pattern;
 import javax.swing.JFrame;
 import java.awt.BorderLayout;
 import javax.swing.JToolBar;
@@ -234,89 +229,45 @@ public class Interface {
 
 		// FUNCOES COMPILAR
 		AbstractAction compilar = new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {
-				/*
-				Reader read = new StringReader(mainTextEditor.getText());
-				Lexico lexico = new Lexico();
-				lexico.setInput(read);
-				try {
-					Field fld[] = Constants.class.getDeclaredFields();
-					Pattern pattern = Pattern.compile("TOKEN" + ".*");
-					Matcher matcher;
-					Token t = null;
-					String str = "linha     classe     lexema\n";
-					while ((t = lexico.nextToken()) != null) {
-						if (t.getId() == 2) {
-							str = "linha " + getLineNumberForIndex(mainTextEditor.getText(), t.getPosition())
-									+ ": " + t.getLexeme() + " palavra reservada invalida";
-							msgArea.setText(str);
-							break;
-						}
-						matcher = pattern.matcher(fld[t.getId()].getName());
-						str += getLineNumberForIndex(mainTextEditor.getText(), t.getPosition()) + "\t";
-						if (matcher.find() == true) {
-							str += "simbolo especial\t";
-						} else if (t.getId() > 6 && t.getId() < 18) {
-							str += "palavra_reservada\t";
-						} else {
-							str += fld[t.getId()].getName().substring(2) + "\t";
-						}
-						str += t.getLexeme() + "\n";
-					}
-					if (!str.contains("invalido") && !str.contains("invalida")) {
-						str += "\nprograma compilado com sucesso";
-					}
-					msgArea.setText(str);
-				} catch (LexicalError er) {
-					boolean temEspaco = mainTextEditor.getText().contains(" ");
-					boolean temEnter = mainTextEditor.getText().contains("\n");
-					if (er.getMessage().contains("identificador")) {
-						if (temEspaco && mainTextEditor.getText()
-								.contains(mainTextEditor.getText().substring(er.getPosition(),
-										mainTextEditor.getText().indexOf(" "))) == true) {
-							msgArea.setText(
-									"linha " + getLineNumberForIndex(mainTextEditor.getText(), er.getPosition()) + ": "
-											+ mainTextEditor.getText().substring(er.getPosition(),
-													mainTextEditor.getText().indexOf(" "))
-											+ " "
-											+ er.getMessage());
-						} else if (temEnter && mainTextEditor.getText()
-								.contains(mainTextEditor.getText().substring(er.getPosition(),
-										mainTextEditor.getText().indexOf('\n'))) == true) {
-							msgArea.setText(
-									"linha " + getLineNumberForIndex(mainTextEditor.getText(), er.getPosition()) + ": "
-											+ mainTextEditor.getText().substring(er.getPosition(),
-													mainTextEditor.getText().indexOf('\n'))
-											+ " "
-											+ er.getMessage());
-						} else {
-							msgArea.setText(
-									"linha " + getLineNumberForIndex(mainTextEditor.getText(), er.getPosition()) + ": "
-											+ mainTextEditor.getText() + " "
-											+ er.getMessage());
-						}
-					} else if (er.getMessage().contains("simbolo")) {
-						msgArea.setText(
-								"linha " + getLineNumberForIndex(mainTextEditor.getText(), er.getPosition()) + ": "
-										+ mainTextEditor.getText().charAt(er.getPosition()) + " " + er.getMessage());
-					} else {
-						msgArea.setText(
-								"linha " + getLineNumberForIndex(mainTextEditor.getText(), er.getPosition()) + ": "
-										+ er.getMessage());
-					}
-				}
-				*/
-				Lexico lexico = new Lexico();
+			public void actionPerformed(ActionEvent e) {				
+				Lexico lexico = new Lexico(mainTextEditor.getText());
 				Sintatico sintatico = new Sintatico();
 				Semantico semantico = new Semantico();
-
-				lexico.setInput(mainTextEditor.getText());
+				Token t = null;
 
 				try {
 					sintatico.parse(lexico, semantico);
+					while ((t = lexico.nextToken()) != null) {
+						if (t.getId() == 2) {
+							msgArea.setText(
+								"Erro na linha " + getLineNumberForIndex(mainTextEditor.getText(), t.getPosition())
+								+ " - " + t.getLexeme() + " palavra reservada invalida"
+							);
+							return;
+						}
+					}
+					msgArea.setText("programa compilado com sucesso");
 				} catch (LexicalError lexicalError) {
-
-				} catch (SyntaticError syntaticError) {
+					String msg = "Erro na linha " + getLineNumberForIndex(mainTextEditor.getText(), lexicalError.getPosition()) + " - ";
+					if (lexicalError.getMessage().contains("identificador")) {
+						String prog = mainTextEditor.getText().substring(lexicalError.getPosition());
+						if (prog.contains("\n")) {
+							if (prog.substring(0, prog.indexOf("\n")).contains(" ")) {
+								msg += prog.substring(0, prog.indexOf(" "));
+							} else {
+								msg += prog.substring(0, prog.indexOf("\n"));
+							}
+						} else if (prog.contains(" ")) {
+							msg += prog.substring(0, prog.indexOf(" "));
+						} else {
+							msg += prog;
+						}
+					} else if (lexicalError.getMessage().contains("simbolo")) {
+						msg += mainTextEditor.getText().charAt(lexicalError.getPosition());
+					}
+					msgArea.setText(msg + " " + lexicalError.getMessage());
+				} 
+				catch (SyntaticError syntaticError) {
 					msgArea.setText("linha " + getLineNumberForIndex(mainTextEditor.getText(), syntaticError.getPosition()) + "--" + "encontrado " + "esperado " + syntaticError.getLocalizedMessage());
 				} catch (SemanticError semanticError) {
 					
