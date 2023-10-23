@@ -253,22 +253,51 @@ public class Interface {
 						String prog = mainTextEditor.getText().substring(lexicalError.getPosition());
 						if (prog.contains("\n")) {
 							if (prog.substring(0, prog.indexOf("\n")).contains(" ")) {
+								msg += prog.substring(0, prog.indexOf(" "))+" ";
+							} else {
+								msg += prog.substring(0, prog.indexOf("\n"))+" ";
+							}
+						} else if (prog.contains(" ")) {
+							msg += prog.substring(0, prog.indexOf(" "))+" ";
+						} else {
+							msg += prog+" ";
+						}
+					} else if (lexicalError.getMessage().contains("simbolo")) {
+						msg += mainTextEditor.getText().charAt(lexicalError.getPosition())+" ";
+					}
+					msgArea.setText(msg + lexicalError.getMessage());
+				} 
+				catch (SyntaticError syntaticError) {
+					String msg = "Erro na linha " + getLineNumberForIndex(mainTextEditor.getText(), syntaticError.getPosition()) + " - encontrado ";
+					String prog = mainTextEditor.getText().substring(syntaticError.getPosition());
+					if (prog.contains("\n")) {
+						if (prog.substring(0, prog.indexOf("\n")).contains(" ")) {
+							if (prog.isBlank()) {
+								msg += "EOF";
+							} else {
 								msg += prog.substring(0, prog.indexOf(" "));
+							}
+						} else {
+							if (prog.isBlank()) {
+								msg += "EOF";
 							} else {
 								msg += prog.substring(0, prog.indexOf("\n"));
 							}
-						} else if (prog.contains(" ")) {
+						}
+					} else if (prog.contains(" ")) {
+						if (prog.isBlank()) {
+							msg += "EOF";
+						} else {
 							msg += prog.substring(0, prog.indexOf(" "));
+						}
+					} else {
+						if (prog.isBlank()) {
+							msg += "EOF";
 						} else {
 							msg += prog;
 						}
-					} else if (lexicalError.getMessage().contains("simbolo")) {
-						msg += mainTextEditor.getText().charAt(lexicalError.getPosition());
 					}
-					msgArea.setText(msg + " " + lexicalError.getMessage());
-				} 
-				catch (SyntaticError syntaticError) {
-					msgArea.setText("linha " + getLineNumberForIndex(mainTextEditor.getText(), syntaticError.getPosition()) + "--" + "encontrado " + "esperado " + syntaticError.getLocalizedMessage());
+					msgArea.setText(msg + "\n\t " + syntaticError.getLocalizedMessage());
 				} catch (SemanticError semanticError) {
 					
 				}
