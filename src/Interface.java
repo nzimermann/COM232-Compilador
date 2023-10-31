@@ -50,6 +50,7 @@ public class Interface {
 		initialize();
 	}
 
+	@SuppressWarnings("serial")
 	private void initialize() {
 		frame = new JFrame();
 		frame.setTitle("Compilador Maluco");
@@ -151,6 +152,7 @@ public class Interface {
 		// FUNCOES SALVAR
 		AbstractAction salvar = new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
+				msgArea.setText(null);
 				if (statusBar.getText() != null) {
 					File saveFile = new File(statusBar.getText());
 					if (saveFile.exists()) {
@@ -307,7 +309,7 @@ public class Interface {
 		// FUNCOES EQUIPE
 		AbstractAction equipe = new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				msgArea.setText("Nicolas Zimermann\nLuís Felipe de Castilho\nArthur Felipe Lueders");
+				msgArea.setText("Nicolas Zimermann\nLuis Felipe de Castilho\nArthur Felipe Lueders");
 			}
 		};
 
