@@ -139,16 +139,16 @@ while = palavra_reservada: "while"
 
 <listadeexpressoes1> ::= î |  "," <listadeexpressoes> ; // ok
 
-<selecao> ::= if "(" <expressao> ")" "{" <listadecomandos> "}" <selecao1> ; // ok
+<selecao> ::= if "(" <expressao> ")" #118 "{" <listadecomandos> "}" <selecao1> #119 ; // ok
 
-<selecao1> ::= î | else "{" <listadecomandos> "}" ; // ok
+<selecao1> ::= î | #120 else "{" <listadecomandos> "}" ; // ok
 
 <listadecomandos> ::= <comando> ";" <listadecomandos1>; // ok
 
 <listadecomandos1> ::= î | <listadecomandos> ; // ok
 
-<repeticao> ::= while "(" <expressao> ")" do "{" <listadecomandos> "}"
-		| repeat "{" <listadecomandos> "}" while "(" <expressao> ")" ; // ok
+<repeticao> ::= #121 while "(" <expressao> ")" #122 do "{" <listadecomandos> "}" #123
+		| #121 repeat "{" <listadecomandos> "}" while "(" <expressao> ")" #124 ; // ok
 
 // =========TRABALHO 3===========
 

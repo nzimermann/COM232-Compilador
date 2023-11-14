@@ -5,14 +5,16 @@ import java.util.Stack;
 public class Semantico implements Constants {
 	List<String> codigo = new ArrayList<>();
 	Stack<String> pilha_tipos = new Stack<>();
+	Stack<String> pilha_rotulos = new Stack<>();
 	String operador_relacional;
+	Integer cont_rotulo = 0;
 	
     public void executeAction(int action, Token token)	throws SemanticError
     {
         // System.out.println("Acao #"+action+", Token: "+token);
     	
         switch(action) {
-        	case 100: _100init();
+        	case 100: _100init(); 
         		break;
         	case 101: _101final();
         		codigo.forEach(s -> {System.out.print(s);});
@@ -48,6 +50,20 @@ public class Semantico implements Constants {
         	case 116: _116constante_string(token);
         		break;
         	case 117: _117minus(pilha_tipos.pop());
+        		break;
+        	case 118: _118if(pilha_tipos.pop(), token);
+        		break;
+        	case 119: _119selecao(pilha_rotulos.pop());
+        		break;
+        	case 120: _120else();
+        		break;
+        	case 121: _121repeat();
+        		break;
+        	case 122: _122repeatExp(pilha_tipos.pop(), token);
+        		break;
+        	case 123: _123repeatFim(pilha_rotulos.pop(), pilha_rotulos.pop());
+        		break;
+        	case 124: _124expressao(pilha_tipos.pop(), pilha_rotulos.pop(), token);
         		break;
         }
     }
@@ -106,6 +122,7 @@ public class Semantico implements Constants {
     }
 
     private void _109operacaoLogica() {
+    	// TODO nao permitido tipo string com tipo float ou int
     	pilha_tipos.pop();
     	pilha_tipos.pop();
     	pilha_tipos.push("bool");
@@ -184,4 +201,51 @@ public class Semantico implements Constants {
     	pilha_tipos.push((tipo.equals("float64"))?"float64":"int64");
     }
 
+    private void _118if(String tipo, Token token) throws SemanticError {
+    	if (!tipo.equals("bool")) {
+    		throw new SemanticError("expressão incompatível em comando de seleção", token.getPosition());
+    	}
+    	String rotulo = "novo_rotulo";
+    	codigo.add("brfalse "+ rotulo + cont_rotulo + "\n");
+    	pilha_rotulos.push(rotulo+cont_rotulo++);
+    }
+    
+    private void _119selecao(String rotulo) {
+    	codigo.add(rotulo + ":\n");
+    }
+    
+    private void _120else() {
+    	String rotulo = "novo_rotulo";
+    	codigo.add("br " + rotulo + cont_rotulo + "\n");
+    	codigo.add(pilha_rotulos.pop()+":\n");
+    	pilha_rotulos.push(rotulo+cont_rotulo++);
+    }
+    
+    private void _121repeat() {
+    	String rotulo = "novo_rotulo";
+    	codigo.add(rotulo + cont_rotulo + ":\n");
+    	pilha_rotulos.push(rotulo+cont_rotulo++);
+    }
+    
+    private void _122repeatExp(String tipo, Token token) throws SemanticError {
+    	if (!tipo.equals("bool")) {
+    		throw new SemanticError("expressão incompatível em comando de repetição", token.getPosition());
+    	}
+    	String rotulo = "novo_rotulo";
+    	codigo.add("brfalse "+ rotulo + cont_rotulo + "\n");
+    	pilha_rotulos.push(rotulo+cont_rotulo++);
+    }
+    
+    private void _123repeatFim(String rotulo2, String rotulo1) {
+    	codigo.add("br " + rotulo1 + "\n");
+    	codigo.add(rotulo2 + ":\n");
+    }
+    
+    private void _124expressao(String tipo, String rotulo, Token token) throws SemanticError {
+    	if (!tipo.equals("bool")) {
+    		throw new SemanticError("expressão incompatível em comando de repetição", token.getPosition());
+    	}
+    	codigo.add("brtrue " + rotulo + "\n");
+    }
+    
 }

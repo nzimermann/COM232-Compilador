@@ -301,7 +301,9 @@ public class Interface {
 					}
 					msgArea.setText(msg + "\n\t " + syntaticError.getLocalizedMessage());
 				} catch (SemanticError semanticError) {
-					
+					msgArea.setText("Erro na linha " 
+						+ getLineNumberForIndex(mainTextEditor.getText(), semanticError.getPosition()) 
+						+ " - " + semanticError.getMessage());
 				}
 			}
 		};
