@@ -2,6 +2,20 @@ public class Lexico implements Constants
 {
     private int position;
     private String input;
+    private Token currentToken;
+    private static String[] palavrasReservadas = {
+	        "do", 
+	        "else", 
+	        "false", 
+	        "fun", 
+	        "if", 
+	        "in", 
+	        "main", 
+	        "out", 
+	        "repeat", 
+	        "true", 
+	        "while"
+	    };
 
     public Lexico()
     {
@@ -24,6 +38,14 @@ public class Lexico implements Constants
         position = pos;
     }
 
+    public Token getCurrentToken() {
+    	return currentToken;
+    }
+    
+    public String getParserConstant(int id) {
+    	return PARSER_ERROR[id];
+    }
+    
     public Token nextToken() throws LexicalError
     {
         if ( ! hasInput() )
@@ -53,9 +75,9 @@ public class Lexico implements Constants
                 }
             }
         }
-        if (endState < 0 || (endState != state && tokenForState(lastState) == -2))
-            throw new LexicalError(SCANNER_ERROR[lastState], start);
-
+        if (endState < 0 || (endState != state && tokenForState(lastState) == -2) && !this.getCurrentToken().equals(Constants.t_palavra_reservada))
+        		throw new LexicalError(SCANNER_ERROR[lastState], start, input.substring(start, position));
+        	        
         position = end;
 
         int token = tokenForState(endState);
@@ -65,11 +87,45 @@ public class Lexico implements Constants
         else
         {
             String lexeme = input.substring(start, end);
+            if (isPalavraReservada(lexeme)) {
+        		return new Token(getIdFromPalavraReservada(lexeme), lexeme, start);
+        	} else {
+        		if (isIdentificador(lexeme)) {
+                	return new Token(Constants.t_identificador, lexeme, start);
+                } else {
+                	
+                }
+        }
             token = lookupToken(token, lexeme);
             return new Token(token, lexeme, start);
         }
     }
+    
+    private int getIdFromPalavraReservada(String lexeme) {
+    	for (int i = 0; i < palavrasReservadas.length; i++) {
+    		if (lexeme.equals(palavrasReservadas[i]))
+    			return (i+7);
+    	}
+		if (isPalavraReservada(lexeme)) {
+			return Constants.t_palavra_reservada;
+	    } else {
+	    	return Constants.t_while;
+	    }
+    }
 
+    private boolean isIdentificador(String lexeme) {
+    	return lexeme.matches("(_i|_f|_s)[a-z][a-z0-9]*") && !isPalavraReservada(lexeme);
+    }
+    
+	private boolean isPalavraReservada(String lexeme) {
+	    for (String palavra : palavrasReservadas) {
+	        if (palavra.equals(lexeme)) {
+	            return true;
+	        }
+	    }
+		return false;
+    }
+    
     private int nextState(char c, int state)
     {
         int start = SCANNER_TABLE_INDEXES[state];

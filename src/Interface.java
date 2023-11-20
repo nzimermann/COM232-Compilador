@@ -251,55 +251,17 @@ public class Interface {
 					msgArea.setText("programa compilado com sucesso");
 				} catch (LexicalError lexicalError) {
 					String msg = "Erro na linha " + getLineNumberForIndex(mainTextEditor.getText(), lexicalError.getPosition()) + " - ";
-					if (lexicalError.getMessage().contains("identificador")) {
-						String prog = mainTextEditor.getText().substring(lexicalError.getPosition());
-						if (prog.contains("\n")) {
-							if (prog.substring(0, prog.indexOf("\n")).contains(" ")) {
-								msg += prog.substring(0, prog.indexOf(" "))+" ";
-							} else {
-								msg += prog.substring(0, prog.indexOf("\n"))+" ";
-							}
-						} else if (prog.contains(" ")) {
-							msg += prog.substring(0, prog.indexOf(" "))+" ";
-						} else {
-							msg += prog+" ";
-						}
-					} else if (lexicalError.getMessage().contains("simbolo")) {
-						msg += mainTextEditor.getText().charAt(lexicalError.getPosition())+" ";
+					if (lexicalError.getMessage().contains("constante")) {
+						msg += lexicalError.getMessage();
+					} else {
+						msg += lexicalError.getLexeme().replace('\n', (char) 0) + " " + lexicalError.getMessage();
 					}
-					msgArea.setText(msg + lexicalError.getMessage());
+					msgArea.setText(msg);
 				} 
 				catch (SyntaticError syntaticError) {
-					String msg = "Erro na linha " + getLineNumberForIndex(mainTextEditor.getText(), syntaticError.getPosition()) + " - encontrado ";
-					String prog = mainTextEditor.getText().substring(syntaticError.getPosition());
-					if (prog.contains("\n")) {
-						if (prog.substring(0, prog.indexOf("\n")).contains(" ")) {
-							if (prog.isBlank()) {
-								msg += "EOF";
-							} else {
-								msg += prog.substring(0, prog.indexOf(" "));
-							}
-						} else {
-							if (prog.isBlank()) {
-								msg += "EOF";
-							} else {
-								msg += prog.substring(0, prog.indexOf("\n"));
-							}
-						}
-					} else if (prog.contains(" ")) {
-						if (prog.isBlank()) {
-							msg += "EOF";
-						} else {
-							msg += prog.substring(0, prog.indexOf(" "));
-						}
-					} else {
-						if (prog.isBlank()) {
-							msg += "EOF";
-						} else {
-							msg += prog;
-						}
-					}
-					msgArea.setText(msg + "\n\t " + syntaticError.getLocalizedMessage());
+					String msg = "Erro na linha " + getLineNumberForIndex(mainTextEditor.getText(), syntaticError.getPosition()) 
+					+ " - encontrado " + lexico.getParserConstant(sintatico.getCurrentToken().getId()).substring(9);
+					msgArea.setText(msg + "\n\t   " + syntaticError.getLocalizedMessage());
 				} catch (SemanticError semanticError) {
 					msgArea.setText("Erro na linha " 
 						+ getLineNumberForIndex(mainTextEditor.getText(), semanticError.getPosition()) 
