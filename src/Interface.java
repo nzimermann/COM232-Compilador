@@ -13,6 +13,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.EmptyStackException;
+
 import javax.swing.JFrame;
 import java.awt.BorderLayout;
 import javax.swing.JToolBar;
@@ -257,8 +259,7 @@ public class Interface {
 						msg += lexicalError.getLexeme().replace('\n', (char) 0) + " " + lexicalError.getMessage();
 					}
 					msgArea.setText(msg);
-				} 
-				catch (SyntaticError syntaticError) {
+				} catch (SyntaticError syntaticError) {
 					String msg = "Erro na linha " + getLineNumberForIndex(mainTextEditor.getText(), syntaticError.getPosition()) 
 					+ " - encontrado " + lexico.getParserConstant(sintatico.getCurrentToken().getId()).substring(9);
 					msgArea.setText(msg + "\n\t   " + syntaticError.getLocalizedMessage());

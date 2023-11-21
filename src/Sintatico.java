@@ -72,6 +72,10 @@ public class Sintatico implements Constants
             return false;
         }
     }
+    
+    public Token getCurrentToken() {
+    	return this.currentToken;
+    }
 
     private boolean pushProduction(int topStack, int tokenInput)
     {
@@ -79,7 +83,7 @@ public class Sintatico implements Constants
         if (p >= 0)
         {
             int[] production = PRODUCTIONS[p];
-            //empilha a produ��o em ordem reversa
+            //empilha a producao em ordem reversa
             for (int i=production.length-1; i>=0; i--)
             {
                 stack.push(new Integer(production[i]));
@@ -89,11 +93,7 @@ public class Sintatico implements Constants
         else
             return false;
     }
-    
-    public Token getCurrentToken() {
-    	return this.currentToken;
-    }
-    
+
     public void parse(Lexico scanner, Semantico semanticAnalyser) throws LexicalError, SyntaticError, SemanticError
     {
         this.scanner = scanner;

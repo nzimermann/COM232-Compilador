@@ -107,31 +107,39 @@ while = palavra_reservada: "while"
 #Grammar
 <programa> ::= #100 fun main "{" <listadeinstrucoes> "}" #101 ; // ok
 
+
 <listadeinstrucoes> ::= <instrucao> ";" <listadeinstrucoes1>; // ok
 
 <listadeinstrucoes1> ::= î | <listadeinstrucoes> ; // ok
 
+
 <instrucao> ::= <listadeidentificadores> <instrucao1> | <entradadedados> | <saidadedados> | <selecao> | <repeticao> ; // ok
 
-<instrucao1> ::= î | ":" <valor> | "=" <expressao> ; // ok
+<instrucao1> ::= î | ":" <valor> #126 | #127 "=" <expressao> #128 ; // ok
 
-<listadeidentificadores> ::= identificador <listadeidentificadores1>; // ok
+
+<listadeidentificadores> ::= identificador #125 <listadeidentificadores1>; // ok
 
 <listadeidentificadores1> ::= î | "," <listadeidentificadores> ; // ok
 
+
 <valor> ::= constantei | constantef | constantes | true | false ; // ok
+
 
 <comando> ::= <atribuicao> | <entradadedados> | <saidadedados> | <selecao> | <repeticao> ; // ok
 
-<atribuicao> ::= <listadeidentificadores> "=" <expressao> ; // ok
+
+<atribuicao> ::= <listadeidentificadores> "=" <expressao> #128 ; // ok
+
 
 <entradadedados> ::= in "(" <listadeentrada> ")" ; // ok
 
-<parametroentrada> ::= constantes "," <listadeidentificadores> | <listadeidentificadores> ; // ok
-
-<listadeentrada> ::= <parametroentrada> <listadeentrada1> ; // ok
+<listadeentrada> ::= <parametroentrada> <listadeidentificadores> #129 <listadeentrada1> ; // ok
 
 <listadeentrada1> ::= î | ";" <listadeentrada> ; // ok
+
+<parametroentrada> ::= î | constantes #130 "," ; // ok
+
 
 <saidadedados> ::= out "(" <listadeexpressoes> ")" ; // ok
 
@@ -170,7 +178,7 @@ while = palavra_reservada: "while"
 
 <termo> ::= <fator> <termo_> ;
 <termo_> ::= î | "*" <fator> #112 <termo_> | "/" <fator> #113 <termo_> ;
-<fator> ::=	identificador |
+<fator> ::=	identificador #131 |
 		constantei #114 |
 		constantef #115 |
 		constantes #116 |

@@ -1,70 +1,92 @@
 import java.util.ArrayList;
+import java.util.EmptyStackException;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 public class Semantico implements Constants {
-	List<String> codigo = new ArrayList<>();
-	Stack<String> pilha_tipos = new Stack<>();
-	Stack<String> pilha_rotulos = new Stack<>();
-	String operador_relacional;
-	Integer cont_rotulo = 0;
-	
+	private List<String> codigo = new ArrayList<>();
+	private List<String> lista_id = new ArrayList<>();
+	private Stack<String> pilha_tipos = new Stack<>();
+	private Stack<String> pilha_rotulos = new Stack<>();
+	private String operador_relacional;
+	private Integer count_rotulo = 0;
+	private Map<String, String[]> tabela_simbolos;
+
     public void executeAction(int action, Token token)	throws SemanticError
     {
         // System.out.println("Acao #"+action+", Token: "+token);
-    	
-        switch(action) {
-        	case 100: _100init(); 
-        		break;
-        	case 101: _101final();
-        		codigo.forEach(s -> {System.out.print(s);});
-        		break;
-        	case 102: _102writeTipo(pilha_tipos.pop());
-        		break;
-        	case 103: _103and(pilha_tipos.pop(),pilha_tipos.pop());
-        		break;
-        	case 104: _104or(pilha_tipos.pop(),pilha_tipos.pop());
-        		break;
-        	case 105: _105true();
-        		break;
-        	case 106: _106false();
-    			break;
-        	case 107: _107not(pilha_tipos.pop());
-        		break;
-        	case 108: _108operadorRelacional(token);
-        		break;
-        	case 109: _109operacaoLogica();
-        		break;
-        	case 110: _110add(pilha_tipos.pop(),pilha_tipos.pop());
-        		break;
-        	case 111: _111sub(pilha_tipos.pop(),pilha_tipos.pop());
-        		break;
-        	case 112: _112mul(pilha_tipos.pop(),pilha_tipos.pop());
-    			break;
-        	case 113: _113div(pilha_tipos.pop(),pilha_tipos.pop());
-    			break;
-        	case 114: _114constante_int(token);
-        		break;
-        	case 115: _115constante_float(token);
-        		break;
-        	case 116: _116constante_string(token);
-        		break;
-        	case 117: _117minus(pilha_tipos.pop());
-        		break;
-        	case 118: _118if(pilha_tipos.pop(), token);
-        		break;
-        	case 119: _119selecao(pilha_rotulos.pop());
-        		break;
-        	case 120: _120else();
-        		break;
-        	case 121: _121repeat();
-        		break;
-        	case 122: _122repeatExp(pilha_tipos.pop(), token);
-        		break;
-        	case 123: _123repeatFim(pilha_rotulos.pop(), pilha_rotulos.pop());
-        		break;
-        	case 124: _124expressao(pilha_tipos.pop(), pilha_rotulos.pop(), token);
-        		break;
+    	try {
+	        switch(action) {
+	        	case 100: _100init(); 
+	        		break;
+	        	case 101: _101final();
+	        		codigo.forEach(s -> {System.out.print(s);});
+	        		break;
+	        	case 102: _102writeTipo(pilha_tipos.pop());
+	        		break;
+	        	case 103: _103and(pilha_tipos.pop(),pilha_tipos.pop());
+	        		break;
+	        	case 104: _104or(pilha_tipos.pop(),pilha_tipos.pop());
+	        		break;
+	        	case 105: _105true();
+	        		break;
+	        	case 106: _106false();
+	    			break;
+	        	case 107: _107not(pilha_tipos.pop());
+	        		break;
+	        	case 108: _108operadorRelacional(token);
+	        		break;
+	        	case 109: _109operacaoLogica();
+	        		break;
+	        	case 110: _110add(pilha_tipos.pop(),pilha_tipos.pop());
+	        		break;
+	        	case 111: _111sub(pilha_tipos.pop(),pilha_tipos.pop());
+	        		break;
+	        	case 112: _112mul(pilha_tipos.pop(),pilha_tipos.pop());
+	    			break;
+	        	case 113: _113div(pilha_tipos.pop(),pilha_tipos.pop());
+	    			break;
+	        	case 114: _114constante_int(token);
+	        		break;
+	        	case 115: _115constante_float(token);
+	        		break;
+	        	case 116: _116constante_string(token);
+	        		break;
+	        	case 117: _117minus(pilha_tipos.pop());
+	        		break;
+	        	case 118: _118if(pilha_tipos.pop(), token);
+	        		break;
+	        	case 119: _119selecao(pilha_rotulos.pop());
+	        		break;
+	        	case 120: _120else();
+	        		break;
+	        	case 121: _121repeat();
+	        		break;
+	        	case 122: _122repeatExp(pilha_tipos.pop(), token);
+	        		break;
+	        	case 123: _123repeatFim(pilha_rotulos.pop(), pilha_rotulos.pop());
+	        		break;
+	        	case 124: _124expressao(pilha_tipos.pop(), pilha_rotulos.pop(), token);
+	        		break;
+	        	case 125: _125identificador(token);
+        			break;
+	        	case 126: _126lista_id(token);
+	        		break;
+	        	case 127: _127lista_id(token);
+	        		break;
+	        	case 128: _128expressao();
+	        		break;
+	        	case 129: _129lista_id();
+	        		break;
+	        	case 130: _130entrada();
+	        		break;
+	        	case 131: _131identificador();
+	        		break;
+        		}
+        	} catch (EmptyStackException e) {
+        		e.printStackTrace();
+        		throw new SemanticError(token.getLexeme() + " não declarado", token.getPosition());
         }
     }
 
@@ -206,8 +228,8 @@ public class Semantico implements Constants {
     		throw new SemanticError("expressão incompatível em comando de seleção", token.getPosition());
     	}
     	String rotulo = "novo_rotulo";
-    	codigo.add("brfalse "+ rotulo + cont_rotulo + "\n");
-    	pilha_rotulos.push(rotulo+cont_rotulo++);
+    	codigo.add("brfalse "+ rotulo + count_rotulo + "\n");
+    	pilha_rotulos.push(rotulo+count_rotulo++);
     }
     
     private void _119selecao(String rotulo) {
@@ -216,15 +238,15 @@ public class Semantico implements Constants {
     
     private void _120else() {
     	String rotulo = "novo_rotulo";
-    	codigo.add("br " + rotulo + cont_rotulo + "\n");
+    	codigo.add("br " + rotulo + count_rotulo + "\n");
     	codigo.add(pilha_rotulos.pop()+":\n");
-    	pilha_rotulos.push(rotulo+cont_rotulo++);
+    	pilha_rotulos.push(rotulo+count_rotulo++);
     }
     
     private void _121repeat() {
     	String rotulo = "novo_rotulo";
-    	codigo.add(rotulo + cont_rotulo + ":\n");
-    	pilha_rotulos.push(rotulo+cont_rotulo++);
+    	codigo.add(rotulo + count_rotulo + ":\n");
+    	pilha_rotulos.push(rotulo+count_rotulo++);
     }
     
     private void _122repeatExp(String tipo, Token token) throws SemanticError {
@@ -232,8 +254,8 @@ public class Semantico implements Constants {
     		throw new SemanticError("expressão incompatível em comando de repetição", token.getPosition());
     	}
     	String rotulo = "novo_rotulo";
-    	codigo.add("brfalse "+ rotulo + cont_rotulo + "\n");
-    	pilha_rotulos.push(rotulo+cont_rotulo++);
+    	codigo.add("brfalse "+ rotulo + count_rotulo + "\n");
+    	pilha_rotulos.push(rotulo+count_rotulo++);
     }
     
     private void _123repeatFim(String rotulo2, String rotulo1) {
@@ -246,6 +268,90 @@ public class Semantico implements Constants {
     		throw new SemanticError("expressão incompatível em comando de repetição", token.getPosition());
     	}
     	codigo.add("brtrue " + rotulo + "\n");
+    }
+    
+    private void _125identificador(Token token) {
+    	lista_id.add(token.getLexeme());
+    }
+    
+    private void _126lista_id(Token token) throws SemanticError {
+    	for (String s : lista_id) {
+    		if (tabela_simbolos.containsKey(s)) {
+    			throw new SemanticError(s + " ja declarado", token.getPosition());
+			}
+		}
+    	for (String s: lista_id) {
+    		String[] tipo_valor = new String[2];
+    		switch (s.charAt(1)) {
+    			case 'i': tipo_valor[0] = "int64"; break;
+    			case 'f': tipo_valor[0] = "float64"; break;
+    			case 's': tipo_valor[0] = "string"; break;
+    			case 'b': tipo_valor[0] = "bool"; break;
+	    	}
+    		tipo_valor[1] = token.getLexeme();
+    		tabela_simbolos.put(s, tipo_valor);
+    	}
+    	this.lista_id.clear();
+    }
+    
+    private void _127lista_id(Token token) throws SemanticError {
+    	for (String s : lista_id) {
+			if (tabela_simbolos.containsKey(s)) {
+				throw new SemanticError(s + " ja declarado", token.getPosition());
+			}
+		}
+    	for (String s : lista_id) {
+			String[] tipo_valor = new String[2];
+			switch (s.charAt(1)) {
+				case 'i': tipo_valor[0] = "int64"; break;
+				case 'f': tipo_valor[0] = "float64"; break;
+				case 's': tipo_valor[0] = "string"; break;
+				case 'b': tipo_valor[0] = "bool"; break;
+	    	}
+			tipo_valor[1] = token.getLexeme();
+			tabela_simbolos.put(s, tipo_valor);	
+    	}
+    	codigo.add(".locals (");
+    	for (int i = 0; i < lista_id.size(); i++) {
+    		String[] tipo_valor = tabela_simbolos.get(lista_id.get(i));
+    		String virgula = (lista_id.size() == 1) ? "": ", ";
+    		codigo.add(tipo_valor[0] + " " + lista_id.get(i) + virgula);
+    	}
+    	codigo.add(")\n");
+    	this.lista_id.clear();
+    }
+    
+    private void _128expressao() {
+    	pilha_tipos.pop();
+    	for (int i = 0; i < lista_id.size() - 1; i++) {
+			codigo.add("dup" + "\n");
+		}
+    	for (String s : lista_id) {
+    		if(tabela_simbolos.get(s)[0].equals("int64")) {
+    			codigo.add("conv.i8" + "\n");
+    		}
+			if (tabela_simbolos.containsKey(s)) {
+				codigo.add("stloc " + s + "\n");
+			}
+		}
+    	this.lista_id.clear();
+    }
+    
+    private void _129lista_id() {
+    	for (String s : lista_id) {
+			if (tabela_simbolos.containsKey(s)) {
+				// codigo.add();
+				codigo.add("stloc " + s);
+			}
+		}
+    }
+    
+    private void _130entrada() {
+    	
+    }
+    
+    private void _131identificador() {
+    	
     }
     
 }
