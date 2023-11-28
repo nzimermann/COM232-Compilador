@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.EmptyStackException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -11,8 +12,16 @@ public class Semantico implements Constants {
 	private Stack<String> pilha_rotulos = new Stack<>();
 	private String operador_relacional;
 	private Integer count_rotulo = 0;
-	private Map<String, String[]> tabela_simbolos;
+	private Map<String, String[]> tabela_simbolos = new HashMap<>();
 
+	public String getCodigoObjeto() {
+		String codigo_obj = "";
+		for (String s : codigo) {
+			codigo_obj += s;
+		}
+		return codigo_obj;
+	}
+	
     public void executeAction(int action, Token token)	throws SemanticError
     {
         // System.out.println("Acao #"+action+", Token: "+token);
@@ -71,17 +80,17 @@ public class Semantico implements Constants {
 	        		break;
 	        	case 125: _125identificador(token);
         			break;
-	        	case 126: _126lista_id(token);
+	        	case 126: _126lista_id_com_valor(token);
 	        		break;
-	        	case 127: _127lista_id(token);
+	        	case 127: _127lista_id_sem_valor(token);
 	        		break;
-	        	case 128: _128expressao();
+	        	case 128: _128expressao(token);
 	        		break;
-	        	case 129: _129lista_id();
+	        	case 129: _129lista_id_entrada(token);
 	        		break;
-	        	case 130: _130entrada();
+	        	case 130: _130entrada(token);
 	        		break;
-	        	case 131: _131identificador();
+	        	case 131: _131identificador(token);
 	        		break;
         		}
         	} catch (EmptyStackException e) {
@@ -274,84 +283,105 @@ public class Semantico implements Constants {
     	lista_id.add(token.getLexeme());
     }
     
-    private void _126lista_id(Token token) throws SemanticError {
+    private void _126lista_id_com_valor(Token token) throws SemanticError {
     	for (String s : lista_id) {
     		if (tabela_simbolos.containsKey(s)) {
     			throw new SemanticError(s + " ja declarado", token.getPosition());
 			}
-		}
-    	for (String s: lista_id) {
     		String[] tipo_valor = new String[2];
     		switch (s.charAt(1)) {
     			case 'i': tipo_valor[0] = "int64"; break;
     			case 'f': tipo_valor[0] = "float64"; break;
     			case 's': tipo_valor[0] = "string"; break;
     			case 'b': tipo_valor[0] = "bool"; break;
-	    	}
+    		}
     		tipo_valor[1] = token.getLexeme();
     		tabela_simbolos.put(s, tipo_valor);
-    	}
+		}
     	this.lista_id.clear();
     }
     
-    private void _127lista_id(Token token) throws SemanticError {
+    private void _127lista_id_sem_valor(Token token) throws SemanticError {
     	for (String s : lista_id) {
 			if (tabela_simbolos.containsKey(s)) {
 				throw new SemanticError(s + " ja declarado", token.getPosition());
 			}
-		}
-    	for (String s : lista_id) {
 			String[] tipo_valor = new String[2];
 			switch (s.charAt(1)) {
 				case 'i': tipo_valor[0] = "int64"; break;
 				case 'f': tipo_valor[0] = "float64"; break;
 				case 's': tipo_valor[0] = "string"; break;
 				case 'b': tipo_valor[0] = "bool"; break;
-	    	}
-			tipo_valor[1] = token.getLexeme();
-			tabela_simbolos.put(s, tipo_valor);	
-    	}
+			}
+			tabela_simbolos.put(s, tipo_valor);
+		}
     	codigo.add(".locals (");
+    	String virgula = "";
     	for (int i = 0; i < lista_id.size(); i++) {
     		String[] tipo_valor = tabela_simbolos.get(lista_id.get(i));
-    		String virgula = (lista_id.size() == 1) ? "": ", ";
+    		virgula = (lista_id.size() == 1) ? "": ", ";
     		codigo.add(tipo_valor[0] + " " + lista_id.get(i) + virgula);
     	}
     	codigo.add(")\n");
     	this.lista_id.clear();
     }
     
-    private void _128expressao() {
+    private void _128expressao(Token token) throws SemanticError {
     	pilha_tipos.pop();
     	for (int i = 0; i < lista_id.size() - 1; i++) {
 			codigo.add("dup" + "\n");
 		}
     	for (String s : lista_id) {
+    		if (!tabela_simbolos.containsKey(s)) {
+    			throw new SemanticError(s + " não declarado", token.getPosition());
+    		}
     		if(tabela_simbolos.get(s)[0].equals("int64")) {
     			codigo.add("conv.i8" + "\n");
     		}
-			if (tabela_simbolos.containsKey(s)) {
-				codigo.add("stloc " + s + "\n");
-			}
+    		codigo.add("stloc " + s + "\n");
 		}
     	this.lista_id.clear();
     }
     
-    private void _129lista_id() {
+    private void _129lista_id_entrada(Token token) throws SemanticError {
     	for (String s : lista_id) {
-			if (tabela_simbolos.containsKey(s)) {
-				// codigo.add();
-				codigo.add("stloc " + s);
+			if (!tabela_simbolos.containsKey(s)) {
+				throw new SemanticError(s + " não declarado", token.getPosition());
 			}
+			// TODO adicionar um default para caso o parse não funcione (string)
+			this.codigo.add("call string\n"
+					+ "[mscorlib]System.Console::ReadLine()\n");
+			switch (tabela_simbolos.get(s)[0]) {
+			case "int64":
+				this.codigo.add("call int64\n"
+						+ "[mscorlib]System.Int64::Parse(string)\n");
+				break;
+			case "float64":
+				this.codigo.add("call float64\n"
+						+ "[mscorlib]System.Double::Parse(string)\n");
+				break;
+			case "bool":
+				this.codigo.add("call bool\n"
+						+ "[mscorlib]System.Boolean::Parse(string)\n");
+				break;
+			}
+			codigo.add("stloc " + s);
 		}
+    	lista_id.clear();
     }
     
-    private void _130entrada() {
-    	
+    private void _130entrada(Token token) {
+    	codigo.add("ldstr " + token.getLexeme() + "\n");
+    	this.codigo.add("call void\n"
+				+ "[mscorlib]System.Console::Write(string)\n"
+			);
     }
     
-    private void _131identificador() {
-    	
+    private void _131identificador(Token token) throws SemanticError {
+    	if(!tabela_simbolos.containsKey(token.getLexeme())) {
+    		throw new SemanticError(token.getLexeme() + " não declarado", token.getPosition());
+    	}
+    	// TODO
     }
     
 }

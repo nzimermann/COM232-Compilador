@@ -115,7 +115,7 @@ while = palavra_reservada: "while"
 
 <instrucao> ::= <listadeidentificadores> <instrucao1> | <entradadedados> | <saidadedados> | <selecao> | <repeticao> ; // ok
 
-<instrucao1> ::= î | ":" <valor> #126 | #127 "=" <expressao> #128 ; // ok
+<instrucao1> ::= ":" <valor> #126 | #127 î | "=" <expressao> #128 ; // ok
 
 
 <listadeidentificadores> ::= identificador #125 <listadeidentificadores1>; // ok
