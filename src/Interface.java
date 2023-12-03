@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -136,8 +137,7 @@ public class Interface {
 					if (selectedFile.getName().toLowerCase().endsWith(".txt")) {
 						try {
 							BufferedReader input = new BufferedReader(
-								new InputStreamReader(new FileInputStream(selectedFile))
-							);
+									new InputStreamReader(new FileInputStream(selectedFile)));
 							mainTextEditor.read(input, "Lendo");
 							msgArea.setText(null);
 							statusBar.setText(selectedFile.getAbsolutePath());
@@ -158,8 +158,7 @@ public class Interface {
 					if (saveFile.exists()) {
 						try {
 							mainTextEditor.write(
-								new OutputStreamWriter(new FileOutputStream(saveFile.getAbsolutePath()), "utf-8")
-							);
+									new OutputStreamWriter(new FileOutputStream(saveFile.getAbsolutePath()), "utf-8"));
 							return;
 						} catch (Exception ex) {
 							ex.printStackTrace();
@@ -231,7 +230,12 @@ public class Interface {
 
 		// FUNCOES COMPILAR
 		AbstractAction compilar = new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {				
+			public void actionPerformed(ActionEvent e) {
+				salvar.actionPerformed(e);
+				if (statusBar.getText() == null || statusBar.getText().isBlank()) {
+					return;
+				}
+				
 				Lexico lexico = new Lexico(mainTextEditor.getText());
 				Sintatico sintatico = new Sintatico();
 				Semantico semantico = new Semantico();
@@ -242,29 +246,41 @@ public class Interface {
 					while ((t = lexico.nextToken()) != null) {
 						if (t.getId() == 2) {
 							msgArea.setText(
-								"Erro na linha " + getLineNumberForIndex(mainTextEditor.getText(), t.getPosition())
-								+ " - " + t.getLexeme() + " palavra reservada invalida"
-							);
+									"Erro na linha " + getLineNumberForIndex(mainTextEditor.getText(), t.getPosition())
+											+ " - " + t.getLexeme() + " palavra reservada invalida");
 							return;
 						}
 					}
 					msgArea.setText("programa compilado com sucesso");
 				} catch (LexicalError lexicalError) {
-					String msg = "Erro na linha " + getLineNumberForIndex(mainTextEditor.getText(), lexicalError.getPosition()) + " - ";
+					String msg = "Erro na linha "
+							+ getLineNumberForIndex(mainTextEditor.getText(), lexicalError.getPosition()) + " - ";
 					if (lexicalError.getMessage().contains("constante")) {
 						msg += lexicalError.getMessage();
 					} else {
 						msg += lexicalError.getLexeme().replace('\n', (char) 0) + " " + lexicalError.getMessage();
 					}
 					msgArea.setText(msg);
+					return;
 				} catch (SyntaticError syntaticError) {
-					String msg = "Erro na linha " + getLineNumberForIndex(mainTextEditor.getText(), syntaticError.getPosition()) 
-					+ " - encontrado " + lexico.getParserConstant(sintatico.getCurrentToken().getId()).substring(9);
+					String msg = "Erro na linha "
+							+ getLineNumberForIndex(mainTextEditor.getText(), syntaticError.getPosition())
+							+ " - encontrado "
+							+ lexico.getParserConstant(sintatico.getCurrentToken().getId()).substring(9);
 					msgArea.setText(msg + "\n\t   " + syntaticError.getLocalizedMessage());
+					return;
 				} catch (SemanticError semanticError) {
-					msgArea.setText("Erro na linha " 
-						+ getLineNumberForIndex(mainTextEditor.getText(), semanticError.getPosition()) 
-						+ " - " + semanticError.getMessage());
+					msgArea.setText("Erro na linha "
+							+ getLineNumberForIndex(mainTextEditor.getText(), semanticError.getPosition())
+							+ " - " + semanticError.getMessage());
+					return;
+				}
+				File codeFile = new File(statusBar.getText().replace(".txt", ".il"));
+				try (FileWriter writer = new FileWriter(codeFile)) {
+					writer.write(semantico.getCodigoObjeto());
+					codeFile.createNewFile();
+				} catch (Exception ex) {
+					ex.printStackTrace();
 				}
 			}
 		};
@@ -311,7 +327,9 @@ public class Interface {
 	}
 
 	private static void copyToClipboard(String text) {
-		if (text == null || text.isBlank()) {return;}
+		if (text == null || text.isBlank()) {
+			return;
+		}
 		StringSelection selection = new StringSelection(text);
 		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 		clipboard.setContents(selection, selection);

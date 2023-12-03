@@ -9,7 +9,8 @@ import javax.swing.JTextArea;
 import javax.swing.border.AbstractBorder;
 
 /**
- * retirado e adaptado de: http://www.guj.com.br/posts/list/123003.java#665398 <br>
+ * retirado e adaptado de: http://www.guj.com.br/posts/list/123003.java#665398
+ * <br>
  */
 class NumberedBorder extends AbstractBorder {
 
@@ -78,8 +79,8 @@ class NumberedBorder extends AbstractBorder {
 	}
 }
 
-
-/* como usar com um JTextArea:
-JTextArea  = new JTextArea();
-txt.setBorder(new NumberedBorder());
-*/
+/*
+ * como usar com um JTextArea:
+ * JTextArea = new JTextArea();
+ * txt.setBorder(new NumberedBorder());
+ */
