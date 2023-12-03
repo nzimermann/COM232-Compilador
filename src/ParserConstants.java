@@ -173,21 +173,21 @@ public interface ParserConstants {
             "esperado identificador constante_string",
             "esperado  ;   ) ",
             "esperado identificador constante_string",
-            "esperado identificador constante_int constante_float constante_string false true  !   (   +   - ",
+            "esperado expressão",
             "esperado  ,   ) ",
             "esperado identificador if in out repeat while",
             "esperado identificador if in out repeat while  } ",
-            "esperado identificador constante_int constante_float constante_string false true  !   (   +   - ",
+            "esperado expressão",
             "esperado  &   |   ,   ;   ) ",
-            "esperado identificador constante_int constante_float constante_string false true  !   (   +   - ",
-            "esperado identificador constante_int constante_float constante_string  (   +   - ",
+            "esperado expressão",
+            "esperado expressão",
             "esperado  &   |   ,   ;   )   ==  !=  <   > ",
             "esperado  ==  !=  <   > ",
-            "esperado identificador constante_int constante_float constante_string  (   +   - ",
+            "esperado expressão",
             "esperado  &   |   ,   ;   )   ==  !=  <   >   +   - ",
-            "esperado identificador constante_int constante_float constante_string  (   +   - ",
+            "esperado expressão",
             "esperado  &   |   ,   ;   )   ==  !=  <   >   +   -   * ",
-            "esperado identificador constante_int constante_float constante_string  (   +   - "
+            "esperado expressão"
     };
     
     /*
