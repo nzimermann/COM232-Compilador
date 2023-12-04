@@ -67,14 +67,14 @@ public class Interface {
 		JFileChooser fileChooser = new JFileChooser();
 
 		// BOTOES
-		JButton btnNovo = toolBarButton("Novo [ctrl-n]", new ImageIcon("./img/new_file.png"));
-		JButton btnAbrir = toolBarButton("Abrir [ctrl-o]", new ImageIcon("./img/open_file.png"));
-		JButton btnSalvar = toolBarButton("Salvar [ctrl-s]", new ImageIcon("./img/save_file.png"));
-		JButton btnCopiar = toolBarButton("Copiar [ctrl-c]", new ImageIcon("./img/copy_file.png"));
-		JButton btnColar = toolBarButton("Colar [ctrl-v]", new ImageIcon("./img/paste_file.png"));
-		JButton btnRecortar = toolBarButton("Recortar [ctrl-x]", new ImageIcon("./img/cut_file.png"));
-		JButton btnCompilar = toolBarButton("Compilar [F7]", new ImageIcon("./img/compile.png"));
-		JButton btnEquipe = toolBarButton("Equipe [F1]", new ImageIcon("./img/help.png"));
+		JButton btnNovo = toolBarButton("Novo [ctrl-n]", new ImageIcon(getClass().getResource("/img/new_file.png")));
+		JButton btnAbrir = toolBarButton("Abrir [ctrl-o]", new ImageIcon(getClass().getResource("/img/open_file.png")));
+		JButton btnSalvar = toolBarButton("Salvar [ctrl-s]", new ImageIcon(getClass().getResource("/img/save_file.png")));
+		JButton btnCopiar = toolBarButton("Copiar [ctrl-c]", new ImageIcon(getClass().getResource("/img/copy_file.png")));
+		JButton btnColar = toolBarButton("Colar [ctrl-v]", new ImageIcon(getClass().getResource("/img/paste_file.png")));
+		JButton btnRecortar = toolBarButton("Recortar [ctrl-x]", new ImageIcon(getClass().getResource("/img/cut_file.png")));
+		JButton btnCompilar = toolBarButton("Compilar [F7]", new ImageIcon(getClass().getResource("/img/compile.png")));
+		JButton btnEquipe = toolBarButton("Equipe [F1]", new ImageIcon(getClass().getResource("/img/help.png")));
 
 		barraFerramentas.add(btnNovo);
 		barraFerramentas.add(btnAbrir);
