@@ -69,10 +69,14 @@ public class Interface {
 		// BOTOES
 		JButton btnNovo = toolBarButton("Novo [ctrl-n]", new ImageIcon(getClass().getResource("/img/new_file.png")));
 		JButton btnAbrir = toolBarButton("Abrir [ctrl-o]", new ImageIcon(getClass().getResource("/img/open_file.png")));
-		JButton btnSalvar = toolBarButton("Salvar [ctrl-s]", new ImageIcon(getClass().getResource("/img/save_file.png")));
-		JButton btnCopiar = toolBarButton("Copiar [ctrl-c]", new ImageIcon(getClass().getResource("/img/copy_file.png")));
-		JButton btnColar = toolBarButton("Colar [ctrl-v]", new ImageIcon(getClass().getResource("/img/paste_file.png")));
-		JButton btnRecortar = toolBarButton("Recortar [ctrl-x]", new ImageIcon(getClass().getResource("/img/cut_file.png")));
+		JButton btnSalvar = toolBarButton("Salvar [ctrl-s]",
+				new ImageIcon(getClass().getResource("/img/save_file.png")));
+		JButton btnCopiar = toolBarButton("Copiar [ctrl-c]",
+				new ImageIcon(getClass().getResource("/img/copy_file.png")));
+		JButton btnColar = toolBarButton("Colar [ctrl-v]",
+				new ImageIcon(getClass().getResource("/img/paste_file.png")));
+		JButton btnRecortar = toolBarButton("Recortar [ctrl-x]",
+				new ImageIcon(getClass().getResource("/img/cut_file.png")));
 		JButton btnCompilar = toolBarButton("Compilar [F7]", new ImageIcon(getClass().getResource("/img/compile.png")));
 		JButton btnEquipe = toolBarButton("Equipe [F1]", new ImageIcon(getClass().getResource("/img/help.png")));
 
@@ -235,7 +239,7 @@ public class Interface {
 				if (statusBar.getText() == null || statusBar.getText().isBlank()) {
 					return;
 				}
-				
+
 				Lexico lexico = new Lexico(mainTextEditor.getText());
 				Sintatico sintatico = new Sintatico();
 				Semantico semantico = new Semantico();
