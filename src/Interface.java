@@ -67,18 +67,14 @@ public class Interface {
 		JFileChooser fileChooser = new JFileChooser();
 
 		// BOTOES
-		JButton btnNovo = toolBarButton("Novo [ctrl-n]", new ImageIcon(getClass().getResource("/img/new_file.png")));
-		JButton btnAbrir = toolBarButton("Abrir [ctrl-o]", new ImageIcon(getClass().getResource("/img/open_file.png")));
-		JButton btnSalvar = toolBarButton("Salvar [ctrl-s]",
-				new ImageIcon(getClass().getResource("/img/save_file.png")));
-		JButton btnCopiar = toolBarButton("Copiar [ctrl-c]",
-				new ImageIcon(getClass().getResource("/img/copy_file.png")));
-		JButton btnColar = toolBarButton("Colar [ctrl-v]",
-				new ImageIcon(getClass().getResource("/img/paste_file.png")));
-		JButton btnRecortar = toolBarButton("Recortar [ctrl-x]",
-				new ImageIcon(getClass().getResource("/img/cut_file.png")));
-		JButton btnCompilar = toolBarButton("Compilar [F7]", new ImageIcon(getClass().getResource("/img/compile.png")));
-		JButton btnEquipe = toolBarButton("Equipe [F1]", new ImageIcon(getClass().getResource("/img/help.png")));
+		JButton btnNovo = toolBarButton("Novo [ctrl-n]", new ImageIcon(getClass().getClassLoader().getResource("new_file.png")));
+		JButton btnAbrir = toolBarButton("Abrir [ctrl-o]", new ImageIcon(getClass().getClassLoader().getResource("open_file.png")));
+		JButton btnSalvar = toolBarButton("Salvar [ctrl-s]", new ImageIcon(getClass().getClassLoader().getResource("save_file.png")));
+		JButton btnCopiar = toolBarButton("Copiar [ctrl-c]", new ImageIcon(getClass().getClassLoader().getResource("copy_file.png")));
+		JButton btnColar = toolBarButton("Colar [ctrl-v]", new ImageIcon(getClass().getClassLoader().getResource("paste_file.png")));
+		JButton btnRecortar = toolBarButton("Recortar [ctrl-x]", new ImageIcon(getClass().getClassLoader().getResource("cut_file.png")));
+		JButton btnCompilar = toolBarButton("Compilar [F7]", new ImageIcon(getClass().getClassLoader().getResource("compile.png")));
+		JButton btnEquipe = toolBarButton("Equipe [F1]", new ImageIcon(getClass().getClassLoader().getResource("help.png")));
 
 		barraFerramentas.add(btnNovo);
 		barraFerramentas.add(btnAbrir);
